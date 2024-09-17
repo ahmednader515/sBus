@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row">
+    <div class="col">
+        <div class="card mb-3">
+            <!-- package Image -->
+            <img src="<%= package.image %>" class="card-img-top" alt="Service Image">
+
+            <!-- Card Body with Title and Description -->
+            <div class="card-body">
+                <h5 class="card-title">العنوان: <%= package.title %></h5>
+                <p class="card-text">الوصف: <%= package.description %></p>
+            </div>
+
+            <!-- package Details -->
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted">الموقع: <%= package.location %></li>
+                <li class="list-group-item">السعر: $<%= package.price %></li>
+            </ul>
+
+            <!-- User Actions (Edit/Delete or Buy) -->
+            <div class="card-body">
+                <% if (currentUser && package.author.equals(currentUser._id)) { %>
+                    <!-- Edit and Delete Options -->
+                    <a href="/packages/<%= package._id %>/edit" class="btn btn-info">تعديل</a>
+                    <form class="d-inline" action="/packages/<%= package._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">مسح</button>
+                    </form>
+                <% } else { %>
+                    <a class="btn" href="/packages/<%= package._id %>/order">طلب</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

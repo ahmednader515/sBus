@@ -1,0 +1,35 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="row">
+    <div class="col">
+        <div class="card mb-3">
+            <!-- package Image -->
+            <img src="<%= fullService.image %>" class="card-img-top" alt="Service Image">
+
+            <!-- Card Body with Title and Description -->
+            <div class="card-body">
+                <h5 class="card-title">العنوان: <%= fullService.title %></h5>
+                <p class="card-text">الوصف: <%= fullService.description %></p>
+            </div>
+
+            <!-- package Details -->
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted">الموقع: <%= fullService.location %></li>
+                <li class="list-group-item">السعر: $<%= fullService.price %></li>
+            </ul>
+
+            <!-- User Actions (Edit/Delete or Buy) -->
+            <div class="card-body">
+                <% if (currentUser && fullService.author.equals(currentUser._id)) { %>
+                    <!-- Edit and Delete Options -->
+                    <a href="/fullServices/<%= fullService._id %>/edit" class="btn btn-info">تعديل</a>
+                    <form class="d-inline" action="/fullServices/<%= fullService._id %>?_method=DELETE" method="POST">
+                        <button class="btn btn-danger">مسح</button>
+                    </form>
+                <% } else { %>
+                    <a class="btn" href="/fullServices/<%= fullService._id %>/order">طلب</a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="service-container">
+    <div class="row">
+        <h1 class="text-center">خدمة جديدة</h1>
+        <div class="col">
+            <form action="/fullServices" method="POST" novalidate class="validated-form">
+                
+                <!-- Title Input -->
+                <div class="mb-3">
+                    <label class="form-label" for="title">العنوان</label>
+                    <input 
+                        class="form-control" 
+                        type="text" 
+                        id="title" 
+                        name="fullService[title]" 
+                        required 
+                    >
+                    <div class="valid-feedback">يبدو جيدا</div>
+                </div>
+                
+                <!-- Location Input -->
+                <div class="mb-3">
+                    <label class="form-label" for="location">الموقع</label>
+                    <input 
+                        class="form-control" 
+                        type="text" 
+                        id="location" 
+                        name="fullService[location]" 
+                        required 
+                    >
+                    <div class="valid-feedback">يبدو جيدا</div>
+                </div>
+                
+                <!-- Image Input -->
+                <div class="mb-3">
+                    <label class="form-label" for="image">الصورة (لينك)</label>
+                    <input 
+                        class="form-control" 
+                        type="text" 
+                        id="image" 
+                        name="fullService[image]" 
+                        required 
+                    >
+                    <div class="valid-feedback">يبدو جيدا</div>
+                </div>
+                
+                <!-- Price Input -->
+                <div class="mb-3">
+                    <label class="form-label" for="price">السعر</label>
+                    <div class="input-group">
+                        <span class="input-group-text" id="price-label">$</span>
+                        <input 
+                            type="number" 
+                            class="form-control" 
+                            id="price" 
+                            placeholder="0.00" 
+                            step="0.01"
+                            aria-label="price" 
+                            aria-describedby="price-label" 
+                            name="fullService[price]" 
+                            required 
+                        >
+                    </div>
+                    <div class="valid-feedback">يبدو جيدا</div>
+                </div>
+                
+                <!-- Description Input -->
+                <div class="mb-3">
+                    <label class="form-label" for="description">الوصف</label>
+                    <textarea 
+                        class="form-control" 
+                        id="description" 
+                        name="fullService[description]" 
+                        required 
+                    ></textarea>
+                    <div class="valid-feedback">يبدو جيدا</div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="mb-3">
+                    <button class="btn btn-login" type="submit">اضافة خدمة</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>

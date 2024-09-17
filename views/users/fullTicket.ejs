@@ -1,0 +1,50 @@
+<% layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<div class="row">
+    <div class="col">
+        <div class="card mb-3" id="pdfElement">
+
+            <!-- Card Body with Title and Description -->
+            <div class="card-body">
+                <h5 class="card-title text">اسم الموظف : <%= fullTicket.username %></h5>
+                <p class="card-text text">اسم العميل : <%= fullTicket.clientname %></p>
+            </div>
+
+            <!-- package Details -->
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted text">رقم العميل : <%= fullTicket.number %></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<button class="btn btn-login" onclick="print()">طباعة</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js" integrity="sha512-MpDFIChbcXl2QgipQrt1VcPHMldRILetapBl5MPCA9Y8r7qvlwx1/Mc9hNTzY+kS5kX6PdoDq41ws1HiVNLdZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+
+var element = document.getElementById('pdfElement');
+
+function print() {
+    // Generate the PDF.
+html2pdf().from(element).set({
+  margin: 0.05,
+  image: { type: "jpeg", quality: 0.80 },      
+  filename: 'ticket.pdf',
+  html2canvas: { scale: 1.2,dpi: 300},
+  pagebreak:'css',      
+  jsPDF: {unit: 'pt', format: 'A4', compressPDF: true}
+}).save();
+}
+
+const texts=document.querySelectorAll('.text')
+texts.forEach(text=>{
+console.log(text);
+text.innerHTML = text.innerText.replace(/\s/g,"\u00a0")
+})
+
+</script>

@@ -1,0 +1,55 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="service-text">
+
+    <h1>جميع الخدمات</h1>
+
+</div>
+
+<div class="service-container">
+
+    <% for(let fullService of fullServices) { %>
+    
+            <div class="card" mb-3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img class="img-fluid service-img" alt="" src="<%=fullService.image%>">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= fullService.title %> </h5>
+                            <p class="card-text"><%= fullService.description %></p>
+                            <p class="card-text">
+                                <small class="text-muted"><%= fullService.location%></small>
+                            </p>
+                            <a class="btn btn-primary" href="/fullServices/<%=fullService._id%>">المزيد</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+    <% } %>
+
+    <% for(let halfService of halfServices) { %>
+    
+            <div class="card" mb-3>
+                <div class="row">
+                    <div class="col-md-4">
+                        <img class="img-fluid service-img" alt="" src="<%=halfService.image%>">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= halfService.title %> </h5>
+                            <p class="card-text"><%= halfService.description %></p>
+                            <p class="card-text">
+                                <small class="text-muted"><%= halfService.location%></small>
+                            </p>
+                            <a class="btn btn-primary" href="/halfServices/<%=halfService._id%>">المزيد</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+        <% } %>
+
+</div>

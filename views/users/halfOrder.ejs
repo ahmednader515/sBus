@@ -1,0 +1,28 @@
+<% layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<form class="validated-form" action="/halfServices/<%= halfService._id %>/order" method="POST" novalidate>
+
+    <h1>أنشاء طلب جديد</h1>
+
+    <div class="mb-3">
+        <label class="form-label" for="clientname">اسم العميل</label>
+        <input class="form-control" type="text" id="clientname" name="clientname" required>
+        <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label" for="number">رقم العميل</label>
+        <input class="form-control" type="text" id="number" name="number" required>
+        <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <button class="btn btn-login">انشاء طلب</button>
+
+</form>
