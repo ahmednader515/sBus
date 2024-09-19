@@ -7,6 +7,7 @@ const Package = require('../models/package');
 const FullService = require('../models/fullService');
 const HalfService = require('../models/halfService');
 const Admin = require('../models/admin');
+const User = require('../models/user');
 
 router.get('/dashboard', isAdminLoggedIn, catchAsync(async (req, res) => {
     const packages = await Package.find({});
@@ -15,26 +16,12 @@ router.get('/dashboard', isAdminLoggedIn, catchAsync(async (req, res) => {
     res.render('other/admin-dashboard', { packages, fullServices, halfServices })
 }));
 
-router.get("/login", (req, res) => {
-    res.render("admins/login")
-})
-
-router.post("/login", storeReturnTo, passport.authenticate('admin-local', {failureFlash: true, failureRedirect: '/login'}), (req, res) => {
-    req.flash("success", "اهلا بعودتك")
-    const redirectUrl = res.locals.returnTo || '/admins/dashboard'
-    delete res.locals.returnTo
-    res.redirect(redirectUrl)
-})
-
-router.get('/register', (req, res) => {
-    res.render('admins/register')
-})
-
 router.post("/register", catchAsync(async (req, res) => {
     try {
-    const {email, username, password} = req.body
-    const admin = new Admin({email, username})
-    const registeredAdmin = await Admin.register(admin, password)
+    const {username, password} = req.body
+    const admin = new User({username})
+    admin.type = req.body.type
+    const registeredAdmin = await User.register(admin, password)
     req.login(registeredAdmin, err => {
         if(err) return next(err)
         req.flash('success', 'مرحبا بك')
@@ -42,7 +29,7 @@ router.post("/register", catchAsync(async (req, res) => {
     })
     } catch(error) {
         req.flash('error', error.message)
-        res.redirect('/admins/register')
+        res.redirect('/login')
     }
 }))
 

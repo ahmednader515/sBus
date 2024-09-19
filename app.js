@@ -19,14 +19,16 @@ const ownerRoutes = require('./routes/owners');
 const packageRoutes = require('./routes/packages');
 const fullServiceRoutes = require('./routes/fullServices');
 const halfServiceRoutes = require('./routes/halfServices');
+const frontEventRoutes = require('./routes/frontEvents');
+const backEventRoutes = require('./routes/backEvents');
 const FullService = require('./models/fullService');
 const HalfService = require('./models/halfService');
 const catchAsync = require('./utils/catchAsync');
 
 // Database Connection
-const dbUrl = process.env.DB_URL;
-// const dbUrlLocal = 'mongodb://localhost:27017/sBus';
-mongoose.connect(dbUrl, {
+// const dbUrl = process.env.DB_URL;
+const dbUrlLocal = 'mongodb://localhost:27017/sBus';
+mongoose.connect(dbUrlLocal, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });
@@ -45,7 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session Configuration
 const store = MongoStore.create({
-    mongoUrl: dbUrl,
+    mongoUrl: dbUrlLocal,
     touchAfter: 24 * 60 * 60,
     crypto: {
         secret: process.env.SECRET,
@@ -71,9 +73,29 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
-passport.use('user-local', new LocalStrategy(User.authenticate()));
-passport.use('admin-local', new LocalStrategy(Admin.authenticate()));
-passport.use('owner-local', new LocalStrategy(Owner.authenticate()));
+passport.use('user-local', new LocalStrategy({
+    usernameField: 'username',
+    passwordField: 'password'
+}, async (username, password, done) => {
+    try {
+        // Find the user by username
+        const user = await User.findOne({ username: username });
+        if (!user) {
+            return done(null, false, { message: 'Unknown username' });
+        }
+
+        // Use passport-local-mongoose's authenticate method to verify the password
+        user.authenticate(password, (err, authenticatedUser, passwordError) => {
+            if (err) return done(err);
+            if (!authenticatedUser) {
+                return done(null, false, { message: 'Invalid password' });
+            }
+            return done(null, authenticatedUser);
+        });
+    } catch (err) {
+        return done(err);
+    }
+}));
 
 // Universal serializeUser and deserializeUser (User or Admin or Owner)
 passport.serializeUser((entity, done) => {
@@ -131,11 +153,12 @@ app.use('/owners', ownerRoutes);
 app.use('/packages', packageRoutes);
 app.use('/fullServices', fullServiceRoutes);
 app.use('/halfServices', halfServiceRoutes);
+app.use('/frontEvents', frontEventRoutes);
+app.use('/backEvents', backEventRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
-    const currentUser = res.locals.currentUser ? res.locals.currentUser.username : 'أيها الضيف';
-    res.render('other/home', {username: currentUser})
+    res.render('users/login')
 })
 
 

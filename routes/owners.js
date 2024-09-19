@@ -7,6 +7,7 @@ const { storeReturnTo, isOwnerLoggedIn } = require('../middleware');
 const Package = require('../models/package');
 const FullService = require('../models/fullService');
 const HalfService = require('../models/halfService');
+const User = require('../models/user');
 
 
 router.get('/dashboard', isOwnerLoggedIn, catchAsync(async (req, res) => {
@@ -34,8 +35,9 @@ router.get('/register', (req, res) => {
 router.post("/register", catchAsync(async (req, res) => {
     try {
     const {email, username, password} = req.body
-    const owner = new Owner({email, username})
-    const registeredOwner = await Owner.register(owner, password)
+    const owner = new User({email, username})
+    owner.type = 'Owner'
+    const registeredOwner = await User.register(owner, password)
     req.login(registeredOwner, err => {
         if(err) return next(err)
         req.flash('success', 'مرحبا بك')
@@ -43,7 +45,7 @@ router.post("/register", catchAsync(async (req, res) => {
     })
     } catch(error) {
         req.flash('error', error.message)
-        res.redirect('owners/register')
+        res.redirect('/login')
     }
 }))
 

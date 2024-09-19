@@ -1,0 +1,75 @@
+<% layout('layouts/boilerplate')%>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <h1 class="btn-login">اضافة ميعاد جديد</h1>
+
+  <form action="/backEvents/add-event" method="POST">
+
+    <div class="mb-3">
+      <label class="form-label" for="date">اختر تاريخ:</label>
+      <input class="form-control" type="date" name="date" id="date" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="time">اختر الوقت:</label>
+      <input class="form-control" type="time" name="time" id="time" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="event">العنوان :</label>
+      <input class="form-control" type="text" name="event" id="event" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="driverName">اسم السائق :</label>
+      <input class="form-control" type="text" name="driverName" id="driverName" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="driver-phone-number">رقم تليفون السائق :</label>
+      <input class="form-control" type="text" name="driverPhoneNumber" id="driverPhoneNumber" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="bus-plate-number">رقم لوحة الباص :</label>
+      <input class="form-control" type="text" name="busPlateNumber" id="busPlateNumber" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="bus-phone-number">رقم تليفون الباص :</label>
+      <input class="form-control" type="text" name="busPhoneNumber" id="busPhoneNumber" required>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label" for="notice">الملاحظات :</label>
+      <textarea class="form-control" name="notice" id="notice" rows="3">لا ملاحظات</textarea>
+      <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div>
+
+    <button class="btn" type="submit">اضافة ميعاد</button>
+  </form>
+
+  <br>
+  <a href="/frontEvents">العودة للخلف</a> <!-- Link to go back to calendar -->

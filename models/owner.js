@@ -7,6 +7,10 @@ const OwnerSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    type: {
+        type: String,
+        required: true,
     }
 })
 

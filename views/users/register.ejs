@@ -5,24 +5,36 @@
     <h1>أنشاء حساب موظف</h1>
 
     <div class="mb-3">
-        <label class="form-label" for="username">اسم الموظف</label>
+        <label class="form-label" for="username">معرف الموظف</label>
         <input class="form-control" type="text" id="username" name="username" required>
         <div class="valid-feedback">
         يبدو جيدا
         </div>
     </div>
 
-    <div class="mb-3">
+    <!-- <div class="mb-3">
         <label class="form-label" for="email">البريد الأليكتروني</label>
         <input class="form-control" type="email" id="email" name="email" required>
+        <div class="valid-feedback">
+        يبدو جيدا
+        </div>
+    </div> -->
+
+    <div class="mb-3">
+        <label class="form-label" for="password">كلمة السر</label>
+        <input class="form-control" type="password" id="password" name="password" required>
         <div class="valid-feedback">
         يبدو جيدا
         </div>
     </div>
 
     <div class="mb-3">
-        <label class="form-label" for="password">كلمة السر</label>
-        <input class="form-control" type="password" id="password" name="password" required>
+        <label class="form-label" for="type">نوع الوظيفة</label>
+        <select name="type" id="type">
+            <option value="user">موظف</option> 
+            <option value="admin">مشرف</option> 
+            <option value="owner">مالك</option> 
+        </select>
         <div class="valid-feedback">
         يبدو جيدا
         </div>

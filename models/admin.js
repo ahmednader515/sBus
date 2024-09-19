@@ -3,10 +3,9 @@ const Schema = mongoose.Schema;
 const passportLocalMongoose = require('passport-local-mongoose')
 
 const AdminSchema = new Schema({
-    email : {
+    type: {
         type: String,
         required: true,
-        unique: true
     }
 })
 

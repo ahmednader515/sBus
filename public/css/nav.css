@@ -43,3 +43,11 @@ nav ul {
     align-items: center;
     gap: 20px;
 }
+
+nav .logo {
+    width: 10%;
+}
+
+nav img {
+    width: 100%;
+}
