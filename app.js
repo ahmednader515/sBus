@@ -17,7 +17,7 @@ const eventRoutes = require('./routes/events');
 // Database Connection
 const dbUrl = process.env.DB_URL;
 const dbUrlLocal = 'mongodb://localhost:27017/sBus';
-mongoose.connect(dbUrl, {
+mongoose.connect(dbUrlLocal, {
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -34,7 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session Configuration
 const store = MongoStore.create({
-    mongoUrl: dbUrl,
+    mongoUrl: dbUrlLocal,
     touchAfter: 24 * 60 * 60,
     crypto: {
         secret: process.env.SECRET,
