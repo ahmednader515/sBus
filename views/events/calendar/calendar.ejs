@@ -1,0 +1,54 @@
+<% layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<body class="d-flex flex-column">
+    <h1 class="btn-login"><%= calendar.name %></h1>
+
+<input type="hidden" id="calendar-id" value="<%= calendar._id %>">
+
+<div class="calendar-nav">
+    <button id="prev-month" class="btn">السابق</button>
+    
+    <!-- Month Dropdown -->
+    <select id="month-dropdown">
+        <option value="0">يناير</option>
+        <option value="1">فبراير</option>
+        <option value="2">مارس</option>
+        <option value="3">ابريل</option>
+        <option value="4">مايو</option>
+        <option value="5">يونيو</option>
+        <option value="6">يوليو</option>
+        <option value="7">اغسطس</option>
+        <option value="8">سبتمبر</option>
+        <option value="9">اكتوبر</option>
+        <option value="10">نوفمبر</option>
+        <option value="11">ديسمبر</option>
+    </select>
+    
+    <!-- Year Dropdown -->
+    <select id="year-dropdown"></select>
+    
+    <button id="next-month" class="btn">التالي</button>
+</div>
+
+<div class="event-type-switch">
+    <button class="btn" id="show-going">مواعيد الذهاب</button>
+    <button class="btn" id="show-return">مواعيد العودة</button>
+</div>
+
+<table id="calendar"></table>
+
+<h3 id="event-type"></h3>
+<br>
+<h3 id="selected-date"></h3>
+
+<div id="event-list"></div>
+
+<a href="/events/add-event" class="btn">فتح ميعاد جديد</a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/javascripts/calendar.js"></script>
+</body>

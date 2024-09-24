@@ -187,6 +187,10 @@ footer {
     margin-bottom: 0 !important;
 }
 
+.form-select {
+    width: 50% !important;
+}
+
 @media only screen and (max-width: 600px) {
     .navBar .login {
         position: relative;

@@ -1,17 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const BackEventSchema = new Schema({
+const eventSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  notice: String,
+  time: String,
   date: {
     type: String,
     required: true
   },
-  time: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
+  calendar: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Calendar',
     required: true
   },
   driverName: {
@@ -26,10 +29,12 @@ const BackEventSchema = new Schema({
   busPhoneNumber: {
     type: String,
   },
-  notice: {
+  type: {
     type: String,
-  },
+    enum: ['ذهاب', 'عودة'],
+    required: true
+  }
 });
 
-const BackEvent = mongoose.model('BackEvent', BackEventSchema);
-module.exports = BackEvent;
+const Event = mongoose.model('Event', eventSchema);
+module.exports = Event;

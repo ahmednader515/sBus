@@ -1,0 +1,53 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/styles.css">
+
+<% if(calendars.length > 2) { %>
+    <body class="d-flex flex-column" style="text-align: right;"></body>
+    <main style="margin-top: 100px;">
+    <% for(calendar of calendars) { %>
+        <div class="calendar-card">
+            <div class="texts-container">
+                <h3><%= calendar.name %></h3>
+                <p><%= calendar.description %></p>
+            </div>
+            <div class="buttons-container">
+                <a class="btn" href="/events/calendars/<%= calendar._id %>">المزيد</a>
+                <form class="button-form" action="/events/edit-calendar/<%= calendar._id %>" method="GET">
+                    <button class="btn" type="submit">تعديل</button>
+                </form>
+                <form class="button-form" action="/events/delete-calendar/<%= calendar._id %>" method="POST">
+                    <button class="btn" type="submit">مسح</button>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <br>
+    <a href="/events/add-calendar" class="btn">اضافة تقويم جديد</a>
+    </main>
+</body>
+<% } else { %> 
+    <body class="d-flex flex-column vh-100" style="text-align: right;"></body>
+    <main style="margin-top: 100px;">
+    <% for(calendar of calendars) { %>
+        <div class="calendar-card">
+            <div class="texts-container">
+                <h3><%= calendar.name %></h3>
+                <p><%= calendar.description %></p>
+            </div>
+            <div class="buttons-container">
+                <a class="btn" href="/events/calendars/<%= calendar._id %>">المزيد</a>
+                <form class="button-form" action="/events/edit-calendar/<%= calendar._id %>" method="GET">
+                    <button class="btn" type="submit">تعديل</button>
+                </form>
+                <form class="button-form" action="/events/delete-calendar/<%= calendar._id %>" method="POST">
+                    <button class="btn" type="submit">مسح</button>
+                </form>
+            </div>
+        </div>
+    <% } %>
+    <br>
+    <a href="/events/add-calendar" class="btn">اضافة تقويم جديد</a>
+    </main>
+</body>
+<% } %>
+    

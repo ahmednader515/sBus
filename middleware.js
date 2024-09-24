@@ -19,11 +19,11 @@ const isUserLoggedIn = (req, res, next) => {
 };
 
 const isAdminLoggedIn = (req, res, next) => {
-    isAuthenticated(req, res, next, 'user', '/admins/login', 'يجب عليك تسجيل الدخول اولا');
+    isAuthenticated(req, res, next, 'user', '/login', 'يجب عليك تسجيل الدخول اولا');
 };
 
 const isOwnerLoggedIn = (req, res, next) => {
-    isAuthenticated(req, res, next, 'user', '/owners/login', 'يجب عليك تسجيل الدخول اولا');
+    isAuthenticated(req, res, next, 'user', '/login', 'يجب عليك تسجيل الدخول اولا');
 };
 
 module.exports = {
