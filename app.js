@@ -11,26 +11,13 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const ExpressError = require('./utils/ExpressError');
 const User = require('./models/user');
-const Admin = require('./models/admin');
-const Owner = require('./models/owner');
 const userRoutes = require('./routes/users');
-const adminRoutes = require('./routes/admins');
-const ownerRoutes = require('./routes/owners');
-const packageRoutes = require('./routes/packages');
-const fullServiceRoutes = require('./routes/fullServices');
-const halfServiceRoutes = require('./routes/halfServices');
-const frontEventRoutes = require('./routes/frontEvents');
-const backEventRoutes = require('./routes/backEvents');
-const FullService = require('./models/fullService');
-const HalfService = require('./models/halfService');
-const catchAsync = require('./utils/catchAsync');
+const eventRoutes = require('./routes/events');
 
 // Database Connection
 // const dbUrl = process.env.DB_URL;
 const dbUrlLocal = 'mongodb://localhost:27017/sBus';
 mongoose.connect(dbUrlLocal, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -148,32 +135,19 @@ app.use((req, res, next) => {
 
 // Routes
 app.use('/', userRoutes);
-app.use('/admins', adminRoutes);
-app.use('/owners', ownerRoutes);
-app.use('/packages', packageRoutes);
-app.use('/fullServices', fullServiceRoutes);
-app.use('/halfServices', halfServiceRoutes);
-app.use('/frontEvents', frontEventRoutes);
-app.use('/backEvents', backEventRoutes);
+app.use('/events', eventRoutes);
 
 // Home Route
 app.get('/', (req, res) => {
-    res.render('users/login')
-})
-
-
-app.get('/services/choose', (req, res) => {
-    res.render('services/choose')
-})
-
-app.get('/services', catchAsync(async (req, res) => {
-    const fullServices = await FullService.find({});
-    const halfServices = await HalfService.find({});
-    res.render('services/allServices', { fullServices, halfServices })
-}));
-
-app.get("/choose/login", (req, res) => {
-    res.render("other/login")
+    if(req.user && req.user.type === 'owner') {
+        res.redirect('/owners/dashboard');
+    } else if(req.user && req.user.type === 'admin') {
+        res.redirect('/admins/dashboard')
+    } else if(req.user && req.user.type === 'user') {
+        res.redirect('/dashboard')
+    } else {
+        res.render('users/login')
+    }
 })
 
 // 404 Handler

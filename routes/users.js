@@ -3,12 +3,20 @@ const router = express.Router()
 const User = require("../models/user")
 const catchAsync = require("../utils/catchAsync")
 const passport = require("passport")
-const { storeReturnTo, isUserLoggedIn } = require('../middleware');
+const { storeReturnTo, isUserLoggedIn, isAdminLoggedIn, isOwnerLoggedIn } = require('../middleware');
 
 const accountTypes = ['user', 'admin', 'owner']
 
 router.get('/dashboard', isUserLoggedIn, catchAsync(async (req, res) => {
-    res.render('other/user-dashboard')
+    res.render('dashboards/user-dashboard')
+}));
+
+router.get('/admins/dashboard', isAdminLoggedIn, catchAsync(async (req, res) => {
+    res.render('dashboards/admin-dashboard')
+}));
+
+router.get('/owners/dashboard', isOwnerLoggedIn, catchAsync(async (req, res) => {
+    res.render('dashboards/dashboard')
 }));
 
 router.get("/login", (req, res) => {
@@ -59,7 +67,6 @@ router.post("/register", catchAsync(async (req, res) => {
     }
 }));
 
-
 router.get('/logout', (req, res, next) => {
     req.logout(function (err) {
         if (err) {
@@ -68,6 +75,6 @@ router.get('/logout', (req, res, next) => {
         req.flash('success', 'نراك لاحقا');
         res.redirect('/');
     });
-}); 
+});
 
 module.exports = router

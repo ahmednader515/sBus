@@ -1,0 +1,45 @@
+<% layout('layouts/boilerplate') %>
+<body class="d-flex flex-column">
+<h1 class="btn-login">فتح ميعاد جديد</h1>
+
+<form action="/events/add-event" method="POST">
+    <label class="form-label" for="event">العنوان</label>
+    <input class="form-control" type="text" name="event" id="event" required>
+
+    <label class="form-label" for="date">التاريخ</label>
+    <input class="form-control" type="date" name="date" id="date" required>
+
+    <label class="form-label" for="time">الوقت</label>
+    <input class="form-control" type="time" name="time" id="time" required>
+
+    <label class="form-label" for="driverName">اسم السائق</label>
+    <input class="form-control" type="text" name="driverName" id="driverName" required>
+
+    <label class="form-label" for="driverPhoneNumber">رقم تيليفون السائق</label>
+    <input class="form-control" type="text" name="driverPhoneNumber" id="driverPhoneNumber" required>
+
+    <label class="form-label" for="busPlateNumber">رقم لوحة الباص</label>
+    <input class="form-control" type="text" name="busPlateNumber" id="busPlateNumber" required>
+
+    <label class="form-label" for="busPhoneNumber">رقم تيليفون الباص</label>
+    <input class="form-control" type="text" name="busPhoneNumber" id="busPhoneNumber" required>
+
+    <label class="form-label" for="type">النوع</label>
+    <select class="form-select" name="type" id="type" required>
+        <option value="ذهاب">ذهاب</option>
+        <option value="عودة">عودة</option>
+    </select>
+
+    <label class="form-label" for="calendar">التقويم</label>
+    <select class="form-select" name="calendar" id="calendar" required>
+        <% calendars.forEach(function(calendar) { %>
+            <option value="<%= calendar._id %>"><%= calendar.name %></option>
+        <% }) %>
+    </select>    
+
+    <label class="form-label" for="notice">الملاحظات</label>
+    <textarea class="form-control" name="notice" id="notice">لا ملاحظات</textarea>
+
+    <button class="btn btn-login" type="submit">اضافة ميعاد جديد</button>
+</form>
+</body>

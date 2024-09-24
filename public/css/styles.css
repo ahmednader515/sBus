@@ -7,6 +7,11 @@
     margin: 20px auto;
     border-collapse: collapse;
   }
+
+  th, td {
+    width: 14.2857%; /* This divides the width evenly for 7 columns */
+    text-align: center; /* Aligns text to center */
+  }
   
   td {
     border: 1px solid #ccc;
@@ -23,7 +28,12 @@
     background-color: #f0f8ff;
     color: #000;
   }
-  
+
+  .day.selected {
+    background-color: #add8e6; /* Light blue color for the selected day */
+    color: #000; /* Change text color if needed */
+  }
+
  /* Card-like styling for events */
 .event-card {
     background-color: #fff;
@@ -34,6 +44,9 @@
     width: 50%;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
   
   .event-card h3 {
@@ -71,6 +84,50 @@
     margin-top: 10px;
   }
 
+  .calendar-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .calendar-card a {
+    text-align: right;
+  }
+  
+  .calendar-card h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #333;
+  }
+  
+  .calendar-card p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  .calendar-card strong {
+    color: #000;
+  }
+
+  .buttons-container {
+    display: flex;
+    align-items: center;
+    margin: 25px 0;
+    gap: 25px;
+  }
+
+  .buttons-container a {
+    margin: 0;
+  }
+
   .button-form {
     width: auto;
     display: block;
@@ -86,11 +143,6 @@
     padding: 0;
   }
   
-  /* Additional styling for form */
-  form {
-    margin: 20px;
-  }
-  
   ul {
     list-style-type: none;
     padding: 0;
@@ -99,11 +151,9 @@
 
 /* Add Event Page Styling */
 form {
-    margin: 20px;
     display: flex;
     flex-direction: column;
     width: 40%;
-    margin: auto;
   }
   
   form label {
@@ -141,7 +191,6 @@ form {
 
   .day.has-event {
     position: relative;
-    background-color: #e0f7fa; /* Light cyan background for event days */
   }
   
   .day.has-event::after {
@@ -155,5 +204,3 @@ form {
     bottom: 4px;
     right: 4px;
   }
-  
-  

@@ -1,0 +1,40 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+<body class="d-flex flex-column">
+<h1 class="btn-login">تعديل ميعاد</h1>
+
+<form action="/events/update-event/<%= event._id %>" method="POST">
+    <label class="form-label" for="event">العنوان</label>
+    <input class="form-control" type="text" name="event" id="event" value="<%= event.name %>" required>
+
+    <label class="form-label" for="date">التاريخ</label>
+    <input class="form-control" type="date" name="date" id="date" value="<%= event.date %>" required>
+
+    <label class="form-label" for="time">الوقت</label>
+    <input class="form-control" type="time" name="time" id="time" value="<%= event.time %>" required>
+
+    <label class="form-label" for="driverName">اسم السائق</label>
+    <input class="form-control" type="text" name="driverName" id="driverName" value="<%= event.driverName %>" required>
+
+    <label class="form-label" for="driverPhoneNumber">رقم تيليفون السائق</label>
+    <input class="form-control" type="text" name="driverPhoneNumber" id="driverPhoneNumber" value="<%= event.driverPhoneNumber %>" required>
+
+    <label class="form-label" for="busPlateNumber">رقم لوحة الباص</label>
+    <input class="form-control" type="text" name="busPlateNumber" id="busPlateNumber" value="<%= event.busPlateNumber %>" required>
+
+    <label class="form-label" for="busPhoneNumber">رقم تيليفون الباص</label>
+    <input class="form-control" type="text" name="busPhoneNumber" id="busPhoneNumber" value="<%= event.busPhoneNumber %>" required>
+
+    <label class="form-label" for="type">النوع</label>
+    <select class="form-select" name="type" id="type" required>
+        <option value="ذهاب">ذهاب</option>
+        <option value="عودة">عودة</option>
+    </select>
+
+    <label class="form-label" for="notice">الملاحظات</label>
+    <textarea class="form-control" name="notice" id="notice"><%= event.notice %></textarea>
+
+    <button class="btn btn-login" type="submit">تعديل</button>
+</form>
+</body>
