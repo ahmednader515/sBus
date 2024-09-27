@@ -20,6 +20,13 @@ router.get('/owners/dashboard', isOwnerLoggedIn, catchAsync(async (req, res) => 
 }));
 
 router.get("/login", (req, res) => {
+    if(req.user.type === 'user') {
+        res.redirect('/dashboard')
+    }else if (req.user.type === 'admin') {
+        res.redirect('/admins/dashboard')
+    } else if (req.user.type === 'owner') {
+        res.redirect('/owners/dashboard')
+    }
     res.render("users/login")
 })
 

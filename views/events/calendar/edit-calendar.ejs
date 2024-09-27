@@ -1,10 +1,11 @@
 <% layout('layouts/boilerplate') %>
 <link rel="stylesheet" href="/css/global.css">
 <link rel="stylesheet" href="/css/nav.css">
-<body class="d-flex flex-column vh-100">
-<h1 class="btn-login">تعديل تقويم</h1>
 
-<form action="/events/update-calendar/<%= calendar._id %>" method="POST">
+<body class="d-flex flex-column vh-100">
+  <h1 class="btn-login">تعديل تقويم</h1>
+
+  <form action="/events/update-calendar/<%= calendar._id %>" method="POST" id="editCalendarForm">
     <label class="form-label" for="calendar">العنوان</label>
     <input class="form-control" type="text" name="calendar" id="calendar" value="<%= calendar.name %>" required>
 
@@ -12,8 +13,13 @@
     <textarea class="form-control" name="description" id="description"><%= calendar.description %></textarea>
 
     <button class="btn btn-login" type="submit">تعديل</button>
-</form>
-<script>
-    window.history.replaceState({}, '', '/events/calendars');
-</script>
+  </form>
+
+  <script>
+    // When the form is successfully submitted, replace the history state
+    document.getElementById('editCalendarForm').addEventListener('submit', function(event) {
+      // Replace current history state to prevent going back to the edit page
+      history.replaceState(null, null, '/events/calendars'); // Redirect to the calendar listing page
+    });
+  </script>
 </body>

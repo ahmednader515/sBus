@@ -4,7 +4,7 @@
 <body class="d-flex flex-column">
 <h1 class="btn-login">تعديل ميعاد</h1>
 
-<form action="/events/update-event/<%= event._id %>" method="POST">
+<form action="/events/update-event/<%= event._id %>" id="editCalendarForm" method="POST">
     <label class="form-label" for="event">العنوان</label>
     <input class="form-control" type="text" name="event" id="event" value="<%= event.name %>" required>
 
@@ -32,9 +32,23 @@
         <option value="عودة">عودة</option>
     </select>
 
+    <label class="form-label" for="numberOfSeats">عدد الكراسي</label>
+    <select class="form-select" name="numberOfSeats" id="numberOfSeats" required>
+        <option value="22">22</option>
+        <option value="25">25</option>
+    </select>
+
     <label class="form-label" for="notice">الملاحظات</label>
     <textarea class="form-control" name="notice" id="notice"><%= event.notice %></textarea>
 
     <button class="btn btn-login" type="submit">تعديل</button>
 </form>
+
+    <script>
+    // When the form is successfully submitted, replace the history state
+    document.getElementById('editCalendarForm').addEventListener('submit', function(event) {
+      // Replace current history state to prevent going back to the edit page
+      history.replaceState(null, null, '/events/calendars'); // Redirect to the calendar listing page
+    });
+  </script>
 </body>

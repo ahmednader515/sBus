@@ -1,0 +1,46 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body style="text-align: right;" class="d-flex flex-column">
+    <h1 class="btn-login">تذكرة جديدة</h1>
+    
+    <form action="/tickets/add-ticket" method="POST">
+        <label class="form-label" for="ticketFromStation">محطة اصدار التذكرة</label>
+        <select class="form-select" id="ticketFromStation" name="ticketFromStation">
+            <option value="قرية الحجاج">قرية الحجاج</option>
+            <option value="الترجمان">الترجمان</option>
+        </select>
+
+        <label class="form-label" for="fromStation">محطة الركوب </label>
+        <select class="form-select" id="fromStation" name="fromStation">
+            <option value="الدولي">الدولي</option>
+            <option value="القبطي">القبطي</option>
+        </select>
+
+        <label class="form-label" for="clientName">اسم العميل</label>
+        <input type="text" id="clientName" name="clientName" class="form-control" placeholder="مثال: محمد احمد خالد">
+
+        <label class="form-label" for="clientPhoneNumber">رقم تيليفون العميل</label>
+        <input type="text" id="clientPhoneNumber" name="clientPhoneNumber" class="form-control" placeholder="مثال: 01085901353">
+
+        <label class="form-label" for="ticketClass">نوع الخدمة</label>
+        <select class="form-select" id="ticketClass" name="ticketClass">
+            <option value="economy">ECONOMY</option>
+            <option value="VIP">VIP</option>
+            <option value="First Class">First Class</option>
+        </select>
+
+        <label class="form-label" for="price">قيمة التذكرة</label>
+        <input type="number" id="price" name="price" value="50" class="form-control">
+
+        <input type="hidden" name="eventDate" value="<%= eventDate %>">
+        <input type="hidden" name="eventTime" value="<%= eventTime %>">
+        <input type="hidden" name="eventId" value="<%= eventId %>">
+        <input type="hidden" name="seatNumber" value="<%= seatNumber %>">
+        <select hidden id="type" name="type">
+            <option selected value="تذكرة كاملة">تذكرة كاملة</option>
+        </select>
+        <button type="submit" class="btn btn-login">حفظ</button>
+    </form>
+</body>

@@ -1,0 +1,59 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body style="text-align: right;" class="d-flex flex-column">
+    <h1 class="btn-login">تأكيد بيانات العميل</h1>
+
+    <form action="/tickets/cancel/<%= ticket._id %>" method="POST">
+        <input type="hidden" name="ticketId" value="<%= ticket._id %>">
+        
+        <% if(ticket.type === 'تذكرة كاملة') { %>
+            <label class="form-label" for="clientName">اسم العميل</label>
+            <input type="text" id="clientName" name="clientName" class="form-control" placeholder="مثال: محمد احمد خالد">
+
+            <label class="form-label" for="clientPhoneNumber">رقم تيليفون العميل</label>
+            <input type="text" id="clientPhoneNumber" name="clientPhoneNumber" class="form-control" placeholder="مثال: 01085901353">
+
+            <label class="form-label" for="price">قيمة التذكرة</label>
+            <input type="number" id="price" name="price" class="form-control">
+
+            <label class="form-label" for="cancel">سبب الالغاء</label>
+            <input type="text" id="cancel" name="cancel" class="form-control">
+        
+        <% } else if (ticket.type === 'نصف تذكرة') { %>
+            <label class="form-label" for="clientName">اسم العميل</label>
+            <input type="text" id="clientName" name="clientName" class="form-control"placeholder="مثال: محمد احمد خالد">
+
+            <label class="form-label" for="clientPhoneNumber">رقم تيليفون العميل</label>
+            <input type="text" id="clientPhoneNumber" name="clientPhoneNumber" class="form-control" placeholder="مثال: 01085901353">
+
+            <label class="form-label" for="price">قيمة التذكرة</label>
+            <input type="number" id="price" name="price" class="form-control">
+
+            <label class="form-label" for="cardNumber">رقم الكارنيه</label>
+            <input type="number" id="cardNumber" name="cardNumber" class="form-control" placeholder="مثال: 332489">
+
+            <label class="form-label" for="cancel">سبب الالغاء</label>
+            <input type="text" id="cancel" name="cancel" class="form-control">
+        
+        <% } else if(ticket.type === 'حجز مالك') { %>
+            <label class="form-label" for="ownerName">اسم المالك</label>
+            <input type="text" id="ownerName" name="ownerName" class="form-control" placeholder="مثال: احمد نادر">
+
+            <label class="form-label" for="clientName">اسم العميل</label>
+            <input type="text" id="clientName" name="clientName" class="form-control" placeholder="مثال: محمد احمد خالد">
+
+            <label class="form-label" for="clientPhoneNumber">رقم تيليفون العميل</label>
+            <input type="text" id="clientPhoneNumber" name="clientPhoneNumber" class="form-control" placeholder="مثال: 01085901353">
+
+            <label class="form-label" for="price">قيمة التذكرة</label>
+            <input type="number" id="price" name="price" class="form-control">
+
+            <label class="form-label" for="cancel">سبب الالغاء</label>
+            <input type="text" id="cancel" name="cancel" class="form-control">
+        <% } %>
+
+        <button type="submit" class="btn btn-login">تأكيد</button>
+    </form>
+</body>
