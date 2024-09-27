@@ -1,0 +1,25 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<body class="d-flex flex-column vh-100">
+    <h1>Edit Ticket</h1>
+    
+    <form action="/tickets/update-ticket/<%= ticket._id %>" method="POST">
+        <label for="name">Ticket Name:</label>
+        <input type="text" id="name" name="name" value="<%= ticket.name %>" required>
+        
+        <label for="description">Ticket Description:</label>
+        <textarea id="description" name="description" required><%= ticket.description %></textarea>
+
+        <label for="status">Ticket Status:</label>
+        <select id="status" name="status" required>
+            <option value="empty" <%= ticket.status === 'empty' ? 'selected' : '' %>>Empty</option>
+            <option value="full" <%= ticket.status === 'full' ? 'selected' : '' %>>Full</option>
+            <option value="pending" <%= ticket.status === 'pending' ? 'selected' : '' %>>Pending</option>
+        </select>
+
+        <button type="submit">Update Ticket</button>
+    </form>
+</body>

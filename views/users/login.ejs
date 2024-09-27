@@ -23,4 +23,17 @@
         <button class="btn btn-login">تسجيل الدخول</button>
     
     </form>
+
+    <script>
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = function () {
+        if(currentUser && currentUser.type === 'user') {
+            window.location.replace('/dashboard');
+        } else if(currentUser && currentUser.type === 'admin') {
+            window.location.replace('/admins/dashboard');
+        } else if(currentUser && currentUser.type === 'owner') {
+            window.location.replace('/owners/dashboard');
+        }
+        };
+      </script>
 </body>

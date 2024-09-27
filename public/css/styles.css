@@ -204,3 +204,33 @@ form {
     bottom: 4px;
     right: 4px;
   }
+
+.seat-full {
+    background-color: red !important; /* Change to any color you want */
+    color: white !important;
+}
+
+.seat-half {
+    background-color: yellow !important; /* Change to any color you want */
+    color: black !important;
+}
+
+.seat-owner {
+  background-color: green !important; /* Change to any color you want */
+  color: white !important;
+}
+
+.seat-temporary {
+  background-color: blue !important; /* Change to any color you want */
+  color: white !important;
+}
+
+.tickets {
+  border-radius: 5px;
+}
+
+.tickets-container {
+  background-color: white;
+  border-radius: 5px;
+  text-align: right;
+}

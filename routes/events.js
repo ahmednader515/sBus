@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Event = require('../models/Event');
 const Calendar = require('../models/Calendar');
+const Ticket = require('../models/Ticket');
+const Seat = require('../models/Seat');
 
 // Render the calendar page
 router.get('/', (req, res) => {
@@ -16,6 +18,10 @@ router.get('/', (req, res) => {
 router.get('/add-event', async (req, res) => {
     try {
       const calendars = await Calendar.find({}); 
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      res.setHeader('Surrogate-Control', 'no-store');
       res.render('events/event/add-event', { calendars });
     } catch (err) {
       console.error(err);
@@ -69,28 +75,54 @@ router.get('/month/:year/:month', async (req, res) => {
 });
 
 // Add Event Route
-router.post('/add-event', (req, res) => {
-    const { date, time, event, driverName, driverPhoneNumber, busPlateNumber, busPhoneNumber, notice, calendar, type } = req.body;
-
-    const newEvent = new Event({
+router.post('/add-event', async (req, res) => {
+    const {
         date,
         time,
-        name: event,
-        calendar,
-        notice,
-        type,
+        event,
         driverName,
         driverPhoneNumber,
         busPlateNumber,
-        busPhoneNumber
-    });
+        busPhoneNumber,
+        notice,
+        calendar,
+        type,
+        numberOfSeats
+    } = req.body;
 
-    newEvent.save()
-    .then(() => {
+    try {
+        // Create a new event
+        const newEvent = new Event({
+            date,
+            time,
+            name: event,
+            calendar,
+            notice,
+            type,
+            driverName,
+            driverPhoneNumber,
+            busPlateNumber,
+            busPhoneNumber,
+            numberOfSeats
+        });
+
+        await newEvent.save();
+
+        // Create seats based on the number of seats selected
+        for (let i = 1; i <= numberOfSeats; i++) {
+            const newSeat = new Seat({
+                seatNumber: i,
+                event: newEvent._id
+            });
+            await newSeat.save();
+        }
+
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
-        res.redirect('/events/calendars/' +  calendar);
-    })
-    .catch(err => console.log(err));
+        res.redirect('/events/calendars/' + calendar);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error creating event or seats.');
+    }
 });
 
 // Edit Event Route
@@ -99,6 +131,11 @@ router.get('/edit-event/:id', (req, res) => {
 
     Event.findById(eventId)
     .then(event => {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+
         res.render('events/event/edit-event', { event });
     })
     .catch(err => console.log(err));
@@ -109,6 +146,12 @@ router.get('/edit-calendar/:id', (req, res) => {
 
     Calendar.findById(calendarId)
     .then(calendar => {
+        // Set cache control headers to prevent caching of the edit page
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
+
         res.render('events/calendar/edit-calendar', { calendar });
     })
     .catch(err => console.log(err));
@@ -117,9 +160,9 @@ router.get('/edit-calendar/:id', (req, res) => {
 // Update Event Route
 router.post('/update-event/:id', (req, res) => {
     const eventId = req.params.id;
-    const { event, date ,description, time, type } = req.body;
+    const { event, date ,description, time, type, numberOfSeats } = req.body;
 
-    Event.findByIdAndUpdate(eventId, { name: event, date, description, time, type }, { new: true })
+    Event.findByIdAndUpdate(eventId, { name: event, date, description, time, type, numberOfSeats }, { new: true })
     .then(editedEvent => {
         req.flash('success', 'تم تعديل الميعاد بنجاح');
         res.redirect(`/events/calendars/${editedEvent.calendar}`);
@@ -134,7 +177,7 @@ router.post('/update-calendar/:id', (req, res) => {
     Calendar.findByIdAndUpdate(calendarId, { name: calendar, description }, { new: true })
     .then(() => {
         req.flash('success', 'تم تعديل التقويم بنجاح');
-        res.redirect(`/events/calendars`);
+        res.redirect(`/events/calendars`);  // Redirect to the calendar list after successful edit
     })
     .catch(err => console.log(err));
 });
@@ -165,6 +208,10 @@ router.post('/delete-calendar/:id', (req, res) => {
 
 // Route to render the calendar creation form
 router.get('/add-calendar', (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
     res.render('events/calendar/add-calendar');
 });
 
@@ -200,11 +247,74 @@ router.get('/calendars/:id', async (req, res) => {
     res.render('events/calendar/calendar', {calendar: calendar})
 })
 
-router.get('/show-event/:id', async (req, res) => {
-    const id = req.params.id;
-    const event = await Event.findById(id)
-    res.render('events/event/show-event', {event:  event})
-})
+router.get('/show-event/:eventId', async (req, res) => {
+    const { eventId } = req.params;
+
+    try {
+        const event = await Event.findById(eventId);
+        const tickets = await Ticket.find({ event: eventId });
+
+        if (!event) {
+            return res.status(404).send('Event not found');
+        }
+
+        // Fetch seats associated with the event
+        const seats = await Seat.find({ event: eventId });
+
+        // Map seats to the corresponding ticket if they exist
+        const seatsWithTickets = {};
+        tickets.forEach(ticket => {
+            seatsWithTickets[ticket.seatNumber] = ticket;
+        });
+
+        // Format the time to AM/PM format
+        const formattedTime = new Date(`1970-01-01T${event.time}`).toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+
+        event.formattedTime = formattedTime; // Add formatted time to the event object
+
+        // Pass seatsWithTickets and seats to the view
+        res.render('events/event/show-event', { event, seatsWithTickets, tickets, seats, currentUser: req.user._id });
+    } catch (err) {
+        console.error('Error fetching event, tickets, or seats:', err);
+        res.status(500).send('Server error while fetching event, tickets, or seats');
+    }
+});
+
+// Route to toggle seat reservation
+router.post('/toggle-reserve/:seatId', async (req, res) => {
+    const { seatId } = req.params;
+    const userId = req.user._id; // Assuming req.user contains the logged-in user information
+
+    try {
+        // Find the seat
+        const seat = await Seat.findById(seatId);
+
+        if (!seat) {
+            return res.status(404).json({ error: 'Seat not found' });
+        }
+
+        // Check if the seat is reserved by another user
+        if (seat.isReserved && seat.reservedBy && !seat.reservedBy.equals(userId)) {
+            return res.status(403).json({ error: 'You are not allowed to unreserve this seat' });
+        }
+
+        // Toggle the reservation status and set the user if reserved
+        seat.isReserved = !seat.isReserved;
+        seat.reservedBy = seat.isReserved ? userId : null;
+
+        await seat.save();
+
+        res.json({ success: true, isReserved: seat.isReserved });
+    } catch (err) {
+        console.error('Error toggling seat reservation:', err);
+        res.status(500).json({ error: 'An error occurred while toggling reservation' });
+    }
+});
+
 
 
 module.exports = router;

@@ -191,6 +191,217 @@ footer {
     width: 50% !important;
 }
 
+.detail-container {
+    display: flex;
+    width: 80%;
+    margin: auto;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+
+.seats-layout {
+    display: grid;
+    grid-template-columns: repeat(6, 50px); /* 6 columns, adjust based on the layout */
+    grid-gap: 10px; /* Space between the seats */
+    justify-content: center; /* Center the entire grid */
+    padding: 20px;
+}
+
+.dropdown-submenu {
+    position: relative;
+}
+  
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
+
+/* Custom placement of seats based on the second image's layout */
+/* First block of 9 seats on the left */
+.seats-layout a:nth-child(1) {
+    grid-column: 1 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.seats-layout a:nth-child(2) {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.seats-layout a:nth-child(3) {
+    grid-column: 1 / span 1;
+    grid-row: 3 / span 1;
+}
+
+.seats-layout a:nth-child(4) {
+    grid-column: 2 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.seats-layout a:nth-child(5) {
+    grid-column: 2 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.seats-layout a:nth-child(6) {
+    grid-column: 2 / span 1;
+    grid-row: 3 / span 1;
+}
+
+.seats-layout a:nth-child(7) {
+    grid-column: 3 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.seats-layout a:nth-child(8) {
+    grid-column: 3 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.seats-layout a:nth-child(9) {
+    grid-column: 3 / span 1;
+    grid-row: 3 / span 1;
+}
+
+/* Right block of 4 seats */
+.seats-layout a:nth-child(10) {
+    grid-column: 5 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.seats-layout a:nth-child(11) {
+    grid-column: 5 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.seats-layout a:nth-child(12) {
+    grid-column: 6 / span 1;
+    grid-row: 1 / span 1;
+}
+
+.seats-layout a:nth-child(13) {
+    grid-column: 6 / span 1;
+    grid-row: 2 / span 1;
+}
+
+/* Bottom left block of 4 seats */
+.seats-layout a:nth-child(14) {
+    grid-column: 1 / span 1;
+    grid-row: 4 / span 1;
+}
+
+.seats-layout a:nth-child(15) {
+    grid-column: 2 / span 1;
+    grid-row: 4 / span 1;
+}
+
+.seats-layout a:nth-child(16) {
+    grid-column: 1 / span 1;
+    grid-row: 5 / span 1;
+}
+
+.seats-layout a:nth-child(17) {
+    grid-column: 2 / span 1;
+    grid-row: 5 / span 1;
+}
+
+/* Bottom right block of 4 seats */
+.seats-layout a:nth-child(18) {
+    grid-column: 5 / span 1;
+    grid-row: 4 / span 1;
+}
+
+.seats-layout a:nth-child(19) {
+    grid-column: 6 / span 1;
+    grid-row: 4 / span 1;
+}
+
+.seats-layout a:nth-child(20) {
+    grid-column: 5 / span 1;
+    grid-row: 5 / span 1;
+}
+
+.seats-layout a:nth-child(21) {
+    grid-column: 6 / span 1;
+    grid-row: 5 / span 1;
+}
+
+/* Styles for each ticket status */
+.ticket-empty {
+    background-color: #e0e0e0; /* Gray for empty */
+    color: black;
+}
+
+.ticket-full {
+    background-color: #ff6b6b; /* Red for full */
+    color: white;
+}
+
+.ticket-pending {
+    background-color: #f0ad4e; /* Orange for pending */
+    color: white;
+}
+
+/* Style the anchor tag (seat number link) */
+.ticket-link {
+    padding: 10px;
+    display: inline-block;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 5px;
+    background-color: #e0e0e0; /* Gray for empty */
+    color: black;
+}
+
+/* Popup container - can be anything you want */
+.popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  
+  /* The actual popup */
+  .popup .popuptext {
+    visibility: hidden;
+    width: 160px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -80px;
+  }
+  
+  /* Popup arrow */
+  .popup .popuptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #555 transparent transparent transparent;
+  }
+  
+  /* Toggle this class - hide and show the popup */
+  .popup .show {
+    visibility: visible;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+  }
+
+
 @media only screen and (max-width: 600px) {
     .navBar .login {
         position: relative;

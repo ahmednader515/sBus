@@ -13,6 +13,7 @@ const ExpressError = require('./utils/ExpressError');
 const User = require('./models/user');
 const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
+const ticketRoutes = require('./routes/tickets');
 
 // Database Connection
 const dbUrl = process.env.DB_URL;
@@ -130,12 +131,14 @@ app.use((req, res, next) => {
     res.locals.currentUser = req.user;
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
+    res.setHeader('Cache-Control', 'no-store');
     next();
 });
 
 // Routes
 app.use('/', userRoutes);
 app.use('/events', eventRoutes);
+app.use('/tickets', ticketRoutes);
 
 // Home Route
 app.get('/', (req, res) => {

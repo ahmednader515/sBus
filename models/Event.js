@@ -33,7 +33,12 @@ const eventSchema = new Schema({
     type: String,
     enum: ['ذهاب', 'عودة'],
     required: true
-  }
+  },
+  numberOfSeats: {
+    type: String,
+    enum: ['22', '25'],
+    required: true
+  },
 });
 
 const Event = mongoose.model('Event', eventSchema);

@@ -1,0 +1,16 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/styles.css">
+
+<body class="d-flex flex-column vh-100">
+    <h1>Ticket Details</h1>
+    <h2>Ticket ID: <%= ticket._id %></h2>
+    <h2>Seat Number: <%= ticket.seatNumber %></h2>
+    <h2>Name: <%= ticket.name %></h2>
+    <h2>Description: <%= ticket.description %></h2>
+    <h2>Status: <%= ticket.status %></h2> <!-- Display the ticket status -->
+
+    <!-- Add edit button to navigate to the edit form -->
+    <a href="/tickets/edit-ticket/<%= ticket._id %>">Edit Ticket</a>
+</body>
