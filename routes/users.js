@@ -58,16 +58,13 @@ router.get('/register', (req, res) => {
 
 router.post("/register", catchAsync(async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = new User({ username });
+        const { username, name, password } = req.body;
+        const user = new User({ username, name });
         user.type = req.body.type; // Add the user type from the form
         const registeredUser = await User.register(user, password); // Passport's register method
-
-        req.login(registeredUser, (err) => {
-            if (err) return next(err);
-            req.flash('success', 'تم اضافة موظف بنجاح');
-            res.redirect("/register");
-        });
+        registeredUser.save()
+        req.flash('success', 'تم اضافة موظف بنجاح');
+        res.redirect("/register");
     } catch (error) {
         req.flash('error', error.message);
         res.redirect('/register');

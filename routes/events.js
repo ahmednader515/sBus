@@ -277,7 +277,7 @@ router.get('/show-event/:eventId', async (req, res) => {
         event.formattedTime = formattedTime; // Add formatted time to the event object
 
         // Pass seatsWithTickets and seats to the view
-        res.render('events/event/show-event', { event, seatsWithTickets, tickets, seats, currentUser: req.user._id });
+        res.render('events/event/show-event', { event, seatsWithTickets, tickets, seats, currentUserId: req.user._id, currentUser: req.user });
     } catch (err) {
         console.error('Error fetching event, tickets, or seats:', err);
         res.status(500).send('Server error while fetching event, tickets, or seats');

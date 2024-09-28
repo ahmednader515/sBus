@@ -16,9 +16,12 @@
 
         <ul class="navbar-nav login">
             <% if(currentUser) { %>
-                <li class="nav-item">
-                    <a class="nav-link" href="/logout">تسجيل الخروج</a>
-                </li>
+                <div class="dropdown">
+                    <button style="border: 0; background-color: transparent;" class="dropdown-toggle" data-toggle="dropdown" type="button"><%= currentUser.name %></button>
+                    <ul style="text-align: center;" class="dropdown-menu">
+                        <li><a href="/logout">تسجيل الخروج</a></li>
+                    </ul>
+                </div>
             <% } %>
         </ul>
 

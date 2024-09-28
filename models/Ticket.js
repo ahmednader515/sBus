@@ -12,12 +12,10 @@ const ticketSchema = new Schema({
   },
   ticketFromStation: {
     type: String,
-    enum: ['الترجمان', 'قرية الحجاج'],
     required: true,
   },
   fromStation: {
     type: String,
-    enum: ['الدولي', 'القبطي'],
     required: true,
   },
   clientName: {
@@ -50,7 +48,7 @@ const ticketSchema = new Schema({
     required: true
   },
   seatNumber: {
-    type: Number,  // Seat number for the ticket
+    type: String,  // Seat number for the ticket
     required: true
   },
   type: {
@@ -66,7 +64,21 @@ const ticketSchema = new Schema({
     type: Date,
     default: Date.now
   },
+  date: {
+    type: String,
+    required: true
+  },
+  extraPrice: {
+    type: Number,
+  },
+  weightType: {
+    type:  String,
+    enum: ['1', '2', '3']
+  },
   cancel: {
+    type: String,
+  },
+  notice: {
     type: String,
   }
 });
