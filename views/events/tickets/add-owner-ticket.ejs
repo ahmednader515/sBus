@@ -8,14 +8,24 @@
     <form action="/tickets/add-ticket" method="POST">
         <label class="form-label" for="ticketFromStation">محطة اصدار التذكرة</label>
         <select class="form-select" id="ticketFromStation" name="ticketFromStation">
-            <option value="قرية الحجاج">قرية الحجاج</option>
-            <option value="الترجمان">الترجمان</option>
+            <% for(ticketSetting of ticketSettings) { %>
+                <% if(ticketSetting.ticketFromStation === "") { %>
+                    
+                <% } else { %>
+                    <option value="<%= ticketSetting.ticketFromStation %>"><%= ticketSetting.ticketFromStation %></option>
+                <% } %>
+            <% } %>
         </select>
 
         <label class="form-label" for="fromStation">محطة الركوب </label>
         <select class="form-select" id="fromStation" name="fromStation">
-            <option value="الدولي">الدولي</option>
-            <option value="القبطي">القبطي</option>
+            <% for(ticketSetting of ticketSettings) { %>
+                <% if(ticketSetting.fromStation === "") { %>
+                    
+                <% } else { %>
+                    <option value="<%= ticketSetting.fromStation %>"><%= ticketSetting.fromStation %></option>
+                <% } %>
+            <% } %>
         </select>
 
         <label class="form-label" for="ownerName">اسم المالك</label>
@@ -35,7 +45,15 @@
         </select>
 
         <label class="form-label" for="price">قيمة التذكرة</label>
-        <input type="number" id="price" name="price" value="50" class="form-control">
+        <select class="form-select" name="price" id="price">
+            <% for(ticketSetting of ticketSettings) { %>
+                <% if(ticketSetting.price === null) { %>
+                    
+                <% } else { %>
+                    <option value="<%= ticketSetting.price %>"><%= ticketSetting.price %></option>
+                <% } %>
+            <% } %>
+        </select>
 
         <input type="hidden" name="eventDate" value="<%= eventDate %>">
         <input type="hidden" name="eventTime" value="<%= eventTime %>">

@@ -1,0 +1,24 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body style="text-align: right;" class="d-flex flex-column">
+    <h1 class="btn-login">الاعدادات</h1>
+
+    <form action="/tickets/settings" method="POST">
+
+            <label class="form-label" for="ticketFromStation">محطة اصدار التذكرة</label>
+            <input type="text" id="ticketFromStation" name="ticketFromStation" class="form-control">
+
+            <label class="form-label" for="fromStation">محطة الركوب</label>
+            <input type="text" id="fromStation" name="fromStation" class="form-control">
+
+            <label class="form-label" for="price">قيمة التذكرة</label>
+            <input type="number" id="price" name="price" class="form-control">
+
+            <label class="form-label" for="cardType">نوع الكرت</label>
+            <input class="form-control" id="cardType" name="cardType" type="text">
+
+        <button type="submit" class="btn btn-login">تأكيد</button>
+    </form>
+</body>

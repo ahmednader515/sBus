@@ -8,6 +8,10 @@ const UserSchema = new Schema({
         required: true, // Ensure username is required
         unique: true    // Ensure username is unique
     },
+    name: {
+        type: String,
+        required: true,
+    },
     type: {
         type: String,
         lowercase: true,
