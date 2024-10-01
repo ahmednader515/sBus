@@ -36,7 +36,7 @@ const eventSchema = new Schema({
   },
   numberOfSeats: {
     type: String,
-    enum: ['22', '25'],
+    enum: ['21', '22', '32', '52', '54', '56'],
     required: true
   },
 });

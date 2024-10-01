@@ -32,7 +32,7 @@ router.get("/login", (req, res) => {
 
 router.post("/login", storeReturnTo, passport.authenticate('user-local', {
     failureFlash: true, 
-    failureRedirect: '/login'
+    failureRedirect: '/'
 }), (req, res) => {
     if(req.user.type === 'user') {
         req.flash("success", "مرحبا بك");

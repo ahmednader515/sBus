@@ -4,275 +4,866 @@
 <link rel="stylesheet" href="/css/styles.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<% if(tickets.length > 0) { %>
     <body class="d-flex flex-column">
         <div class="detail-container">
             <!-- Seats Section -->
             <div class="seats">
-                <div class="seats-layout">
-                    <% seats.forEach(seat => { %>
-                        <% 
-                            const ticket = seatsWithTickets[seat.seatNumber]; 
-                            const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId);
-                            let seatClass = '';
-                            let seatStatus = '';
-                            const isCancelled = ticket && ticket.status === 'cancelled';
-    
-                            // Determine if the user can unreserve the seat
-                            const canUnreserve = seat.isReserved && isReservedByCurrentUser;
-                        
-                            // Determine seat class based on ticket type
-                            if (ticket && !isCancelled) {
-                                switch(ticket.type) {
-                                    case 'تذكرة كاملة':
-                                        seatClass = 'seat-full';
-                                        break;
-                                    case 'نصف تذكرة':
-                                        seatClass = 'seat-half';
-                                        break;
-                                    case 'حجز مالك':
-                                        seatClass = 'seat-owner';
-                                        break;
-                                    default:
-                                        seatClass = '';
-                                        break;
-                                }
-                            }
-    
-                            if (!ticket && seat.isReserved) {
-                                seatClass = 'seat-temporary'
-                            }
-    
-                            // Determine seat status based on reservation
-                            seatStatus = seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت';
-    
-                            const isDisabled = ticket && !isCancelled ? 'disabled' : '';
-                        %>
-    
-                        <!-- Seat Dropdown -->
-                        <div class="dropdown">
-                            <button id="seat" class="btn btn-default dropdown-toggle <%= seatClass %>" type="button" data-toggle="dropdown">
-                                <%= seat.seatNumber %>
-                            </button>
-    
-                            <ul class="dropdown-menu">
-                                <!-- No ticket on seat and  not reserved -->
-                                <% if (!ticket && !seat.isReserved) { %>
-                                    <!-- Empty or cancelled seat options -->
-                                    <li>
-                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
 
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+                <% if(seats.length === 21) { %>
 
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-
-                                    <!-- there is a ticket on the seat -->
-                                <% } else if(ticket && !isCancelled) { %>
-                                    <!-- Existing ticket options -->
-                                    <li>
-                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
-                                    </li>
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
-                                    </li>
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
-                                    </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>                                        
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="">ترحيل التذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من ترحيل التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
-
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="">تبديل المقعد</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من تبديل المقعد</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/changeSeat/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
-                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
     
-                                    <li>
-                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-
-                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
-                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
-    
-                                    <li>
-                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 21, 20, 19, 18]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
                                     <% } %>
-                            </ul>
+                                <% } %>
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 6; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let middleColumnSeats = [2, 4, 6, 8, 10, 12]; 
+                                %>
+                                <% for (let seatNumber of middleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [3, 5, 7, 9, 11, 13]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
                         </div>
-                    <% }) %>
-                </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [16, 17, 14, 15]; 
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } else if (seats.length === 22) { %>
+
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 22, 21, 20, 19, 18]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 6; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let middleColumnSeats = [2, 4, 6, 8, 10, 12]; 
+                                %>
+                                <% for (let seatNumber of middleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [3, 5, 7, 9, 11, 13]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [16, 17, 14, 15]; 
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } else if (seats.length === 32) { %>
+
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 5, 9, 13, 17, 21, 25]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% if(seatNumber === 5) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let firstMiddleColumnSeats = [2, 6, 10, 14, 18, 22, 26]; 
+                                %>
+                                <% for (let seatNumber of firstMiddleColumnSeats) { %>
+                                    <% if(seatNumber === 6) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 8; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="middle-column">
+
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let secondMiddleColumnSeats = [3, 7, 11, 15, 19, 23, 27]; 
+                                %>
+                                <% for (let seatNumber of secondMiddleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [4, 8, 12, 16, 20, 24, 28]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [16, 17, 14, 15]; 
+                            if(seats.length > 22) {
+                                bottomRowSeats = [29, 30,  31, 32]
+                            }
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } else if (seats.length === 52) { %>
+
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% if(seatNumber === 1 || seatNumber === 25) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let firstMiddleColumnSeats = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46]; 
+                                %>
+                                <% for (let seatNumber of firstMiddleColumnSeats) { %>
+                                    <% if(seatNumber === 2 || seatNumber === 26) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 14; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="middle-column">
+
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let secondMiddleColumnSeats = [3, 7, 11, 15, 19, 23, 27, 31,  35, 39, 43, 47]; 
+                                %>
+                                <% for (let seatNumber of secondMiddleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [49, 50, 51, 52]; 
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } else if (seats.length === 54) { %>
+
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% if(seatNumber === 1 || seatNumber === 25) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let firstMiddleColumnSeats = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46]; 
+                                %>
+                                <% for (let seatNumber of firstMiddleColumnSeats) { %>
+                                    <% if(seatNumber === 2 || seatNumber === 26) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 14; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="middle-column">
+
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let secondMiddleColumnSeats = [3, 7, 11, 15, 19, 23, 27, 31,  35, 39, 43, 47, 53]; 
+                                %>
+                                <% for (let seatNumber of secondMiddleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 54]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [49, 50, 51, 52]; 
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } else if (seats.length === 56) { %>
+
+                    <div class="seats-layout">
+                        <div class="top-section">
+                            <div class="right-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const rightColumnSeats = [1, 5, 9, 13, 17, 21, 25, 29, 33, 37, 41, 45, 55]; 
+                                %>
+                                <% for (let seatNumber of rightColumnSeats) { %>
+                                    <% if(seatNumber === 1 || seatNumber === 25) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+    
+                            <div class="middle-column">
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let firstMiddleColumnSeats = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46, 56]; 
+                                %>
+                                <% for (let seatNumber of firstMiddleColumnSeats) { %>
+                                    <% if(seatNumber === 2 || seatNumber === 26) { %>
+                                        <div class="seat-container">
+                                            <button class="btn extra-button btn-default non-functional-button">
+                                                ㅤ
+                                            </button>
+                                        </div>
+                                    <% } %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+
+                            </div>
+
+                            <div class="extra-column">
+                                <% for (let i = 0; i < 15; i++) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <div class="middle-column">
+
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                let secondMiddleColumnSeats = [3, 7, 11, 15, 19, 23, 27, 31,  35, 39, 43, 47, 53]; 
+                                %>
+                                <% for (let seatNumber of secondMiddleColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                    
+                            <div class="left-column">
+    
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+    
+                                <% 
+                                // Define the specific seat numbers for the right column
+                                const leftColumnSeats = [4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 54]; 
+                                %>
+                                <% for (let seatNumber of leftColumnSeats) { %>
+                                    <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                    <% if (seat) { %>
+                                        <div class="seat-container">
+                                            <div class="dropdown">
+                                                <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                    <%= seat.seatNumber %>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <!-- Dropdown logic for this seat -->
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                <% } %>
+                            </div>
+                        </div>
+                    
+                        <!-- Bottom Row for Remaining Seats -->
+                        <div class="bottom-row">
+                            <% 
+                            // Define the specific seat numbers for the bottom row
+                            let bottomRowSeats = [49, 50, 51, 52]; 
+                            %>
+                            <% for (let seatNumber of bottomRowSeats) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <div class="seat-container">
+                                        <div class="dropdown">
+                                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                                <%= seat.seatNumber %>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <!-- Dropdown logic for this seat -->
+                                            </ul>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+
+                <% } %>                                           
+                
             </div>
     
             <!-- Event Details Section -->
@@ -331,307 +922,8 @@
                     location.reload();
                 });
             });
+
         </script>
     </body>
-<% } else { %>
-    <body class="d-flex flex-column vh-100">
-        <div class="detail-container">
-            <!-- Seats Section -->
-            <div class="seats">
-                <div class="seats-layout">
-                    <% seats.forEach(seat => { %>
-                        <% 
-                            const ticket = seatsWithTickets[seat.seatNumber]; 
-                            const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId);
-                            let seatClass = '';
-                            let seatStatus = '';
-                            const isCancelled = ticket && ticket.status === 'cancelled';
-    
-                            // Determine if the user can unreserve the seat
-                            const canUnreserve = seat.isReserved && isReservedByCurrentUser;
-                        
-                            // Determine seat class based on ticket type
-                            if (ticket && !isCancelled) {
-                                switch(ticket.type) {
-                                    case 'تذكرة كاملة':
-                                        seatClass = 'seat-full';
-                                        break;
-                                    case 'نصف تذكرة':
-                                        seatClass = 'seat-half';
-                                        break;
-                                    case 'حجز مالك':
-                                        seatClass = 'seat-owner';
-                                        break;
-                                    default:
-                                        seatClass = '';
-                                        break;
-                                }
-                            }
-    
-                            if (!ticket && seat.isReserved) {
-                                seatClass = 'seat-temporary'
-                            }
-    
-                            // Determine seat status based on reservation
-                            seatStatus = seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت';
-    
-                            const isDisabled = ticket && !isCancelled ? 'disabled' : '';
-                        %>
-    
-                        <!-- Seat Dropdown -->
-                        <div class="dropdown">
-                            <button id="seat" class="btn btn-default dropdown-toggle <%= seatClass %>" type="button" data-toggle="dropdown">
-                                <%= seat.seatNumber %>
-                            </button>
-    
-                            <ul class="dropdown-menu">
-                                <!-- No ticket on seat and  not reserved -->
-                                <% if (!ticket && !seat.isReserved) { %>
-                                    <!-- Empty or cancelled seat options -->
-                                    <li>
-                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-
-                                    <!-- there is a ticket on the seat -->
-                                <% } else if(ticket && !isCancelled) { %>
-                                    <!-- Existing ticket options -->
-                                    <li>
-                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
-                                    </li>
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
-                                    </li>
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
-                                    </li>
-                                    <li class="dropdown-submenu">
-                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>                                        
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a href="">ترحيل التذكرة</a></li>
-
-                                    <li><a href="">وزن الزيادة</a></li>
-
-                                    <li><a href="">تبديل المقعد</a></li>
-
-                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
-                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
-    
-                                    <li>
-                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-
-                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
-                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
-    
-                                    <li>
-                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
-                                    </li>
-    
-                                    <!-- Full and Half Ticket options -->
-                                    <li class="dropdown-submenu">
-                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-    
-                                    <!-- Owner Ticket option -->
-                                    <li>
-                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
-                                    </li>
-    
-                                    <!-- Cancel Ticket option -->
-                                    <li class="dropdown-submenu">
-                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
-                                        <ul class="dropdown-menu" style="text-align: center;">
-                                            <p>هل انت متأكد من الغاء التذكرة</p>
-                                            <li>
-                                                <% if (ticket) { %>
-                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
-                                                <% } else { %>
-                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
-                                                <% } %>
-                                            </li>
-                                            <li>
-                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
-                                            </li>
-                                        </ul>
-                                    </li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
-
-                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
-    
-                                    <% } %>
-                            </ul>
-                        </div>
-                    <% }) %>
-                </div>
-            </div>
-    
-            <!-- Event Details Section -->
-            <div class="details">
-                <h3><%= event.name %></h3>
-                <h3><%= event.date %></h3>
-                <h3><%= event.formattedTime %></h3>
-                <h3><%= event.driverName %></h3>
-                <h3><%= event.driverPhoneNumber %></h3>
-                <h3><%= event.busPlateNumber %></h3>
-                <h3><%= event.busPhoneNumber %></h3>
-                <h3><%= event.type %></h3>
-                <h3><%= event.numberOfSeats %></h3>
-            </div>
-        </div>
-    
-        <!-- Tickets Section -->
-        <div class="tickets">
-            <h3>التذاكر</h3>
-            <% tickets.forEach(ticket => { %>
-                <div class="tickets-container">
-                    <h4><%= ticket.clientName %></h4>
-                    <h4><%= ticket.clientPhoneNumber %></h4>
-                    <p><%= ticket.seatNumber %></p>
-                    <p><%= ticket.serial %></p>
-                </div>
-            <% }) %>
-        </div>
-    
-        <!-- Scripts -->
-        <script>
-            $(document).ready(function() {
-                // Handle submenu toggle
-                $('.dropdown-submenu a.test').on('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    $(this).parent().children('ul').toggle();
-                });
-    
-                // Handle reservation toggle
-                $('.toggle-reservation').on('click', function(e) {
-                    e.preventDefault();
-                    const seatId = $(this).data('seat-id');
-                    const seatElement = $(this);
-    
-                    $.post('/events/toggle-reserve/' + seatId, function(response) {
-                        if (response.success) {
-                            seatElement.text(response.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت');
-                            seatElement.toggleClass('reserved', response.isReserved);
-                        } else {
-                            alert('Failed to toggle reservation. Please try again.');
-                        }
-                    }).fail(function() {
-                        alert('Error toggling reservation.');
-                    });
-                    location.reload();
-                });
-            });
-        </script>
-    </body>
-<% } %>
 
 

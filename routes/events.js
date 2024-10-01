@@ -247,6 +247,25 @@ router.get('/calendars/:id', async (req, res) => {
     res.render('events/calendar/calendar', {calendar: calendar})
 })
 
+function getSeatClass(seat, seatsWithTickets) {
+    const ticket = seatsWithTickets[seat.seatNumber];
+    if (ticket && ticket.status !== 'cancelled') {
+        switch (ticket.type) {
+            case 'تذكرة كاملة':
+                return 'seat-full';
+            case 'نصف تذكرة':
+                return 'seat-half';
+            case 'حجز مالك':
+                return 'seat-owner';
+            default:
+                return '';
+        }
+    } else if (!ticket && seat.isReserved) {
+        return 'seat-temporary';
+    }
+    return '';
+}
+
 router.get('/show-event/:eventId', async (req, res) => {
     const { eventId } = req.params;
 
@@ -267,6 +286,10 @@ router.get('/show-event/:eventId', async (req, res) => {
             seatsWithTickets[ticket.seatNumber] = ticket;
         });
 
+        seats.forEach(seat => {
+            seat.seatClass = getSeatClass(seat, seatsWithTickets);
+        });
+
         // Format the time to AM/PM format
         const formattedTime = new Date(`1970-01-01T${event.time}`).toLocaleTimeString('en-US', {
             hour: 'numeric',
@@ -277,7 +300,7 @@ router.get('/show-event/:eventId', async (req, res) => {
         event.formattedTime = formattedTime; // Add formatted time to the event object
 
         // Pass seatsWithTickets and seats to the view
-        res.render('events/event/show-event', { event, seatsWithTickets, tickets, seats, currentUserId: req.user._id, currentUser: req.user });
+        res.render('events/event/show-event', { event, tickets, seats, currentUserId: req.user._id, currentUser: req.user });
     } catch (err) {
         console.error('Error fetching event, tickets, or seats:', err);
         res.status(500).send('Server error while fetching event, tickets, or seats');
