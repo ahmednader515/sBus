@@ -69,14 +69,16 @@ passport.use('user-local', new LocalStrategy({
         // Find the user by username
         const user = await User.findOne({ username: username });
         if (!user) {
-            return done(null, false, { message: 'Unknown username' });
+            return done(null, false, { message: 'معرف الموظف او  كلمة المرور غير صحيحة' });
+
         }
 
         // Use passport-local-mongoose's authenticate method to verify the password
         user.authenticate(password, (err, authenticatedUser, passwordError) => {
             if (err) return done(err);
             if (!authenticatedUser) {
-                return done(null, false, { message: 'Invalid password' });
+                return done(null, false, { message: 'معرف الموظف  او  كلمة المرور غير صحيحة' });
+
             }
             return done(null, authenticatedUser);
         });

@@ -50,6 +50,10 @@ main {
     cursor: pointer;
 }
 
+.btn-default {
+    width: 60px !important;
+}
+
 .btn-login {
     margin: 25px 0;
 }
@@ -400,6 +404,65 @@ footer {
     -webkit-animation: fadeIn 1s;
     animation: fadeIn 1s;
   }
+
+  .seats {
+    background-color: #fff;
+    border-radius: 5px;
+    margin: 100px 0;
+  }
+
+  /* Container to hold the bus seats */
+  .seats-layout {
+    display: flex;
+    flex-direction: column;
+}
+
+.top-section {
+    display: flex;
+}
+
+.left-column, .middle-column, .right-column, .extra-column {
+    flex: 1; /* Ensures each column takes up equal space */
+    display: flex;
+    flex-direction: column;
+}
+
+.seat-container {
+    margin: 5px;
+}
+
+.bottom-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.extra-button {
+    background-color: #ddd !important;
+    cursor: not-allowed !important;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.bottom-row-btn {
+    margin: 0 10px;
+    text-align: center;
+}
+
+.extra-button:hover {
+    background-color: #ddd !important;
+}
+
+.bottom-row {
+    display: flex; /* Use flexbox for horizontal layout */
+    justify-content: center; /* Center the seats */
+    text-align: center;
+    margin: 20px auto;
+}
+
+.seat-container {
+    display: flex; /* Use flex to arrange dropdowns in a row */
+}
 
 
 @media only screen and (max-width: 600px) {

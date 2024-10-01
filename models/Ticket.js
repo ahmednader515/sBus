@@ -37,7 +37,6 @@ const ticketSchema = new Schema({
   },
   cardType: {
     type: String,
-    enum: ['First Class', 'VIP', 'economy']
   },
   cardNumber: {
     type: String,
@@ -53,7 +52,6 @@ const ticketSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['تذكرة كاملة', 'نصف تذكرة', 'حجز مالك', 'حجز مؤقت'],
     required: true,
   },
   previousType: {  // New field to store the previous ticket type
