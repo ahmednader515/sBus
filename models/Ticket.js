@@ -57,7 +57,7 @@ const ticketSchema = new Schema({
   previousType: {  // New field to store the previous ticket type
     type: String,
   },
-  status: { type: String, default: 'active' }, 
+  status: { type: String, default: 'غير ملغية' }, 
   created_at: {
     type: Date,
     default: Date.now

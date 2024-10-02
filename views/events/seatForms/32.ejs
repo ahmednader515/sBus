@@ -1,0 +1,1173 @@
+<div class="seats-layout">
+    <div class="top-section">
+        <div class="right-column">
+
+            <% 
+            // Define the specific seat numbers for the right column
+            const rightColumnSeats = [1, 5, 9, 13, 17, 21, 25]; 
+            %>
+            <% for (let seatNumber of rightColumnSeats) { %>
+                <% if(seatNumber === 5) { %>
+                    <div class="seat-container">
+                        <button class="btn extra-button btn-default non-functional-button">
+                            ㅤ
+                        </button>
+                    </div>
+                <% } %>
+                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                <% if (seat) { %>
+                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                    <% const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId); %>
+                    <% const isCancelled = ticket && ticket.status === 'cancelled'; %>
+                    <% const canUnreserve = seat.isReserved && isReservedByCurrentUser; %>
+                    <div class="seat-container">
+                        <div class="dropdown">
+                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                <%= seat.seatNumber %>
+                            </button>
+                            <ul class="dropdown-menu">
+    
+                                <!-- No ticket on seat and  not reserved -->
+                                <% if (!ticket && !seat.isReserved) { %>
+                                    <!-- Empty or cancelled seat options -->
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is a ticket on the seat -->
+                                <% } else if(ticket && !isCancelled) { %>
+                                    <!-- Existing ticket options -->
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">ترحيل التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من ترحيل التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
+    
+                                    <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
+                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
+                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <% } %>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+
+        <div class="middle-column">
+
+            <% 
+            // Define the specific seat numbers for the right column
+            let firstMiddleColumnSeats = [2, 6, 10, 14, 18, 22, 26]; 
+            %>
+            <% for (let seatNumber of firstMiddleColumnSeats) { %>
+                <% if(seatNumber === 6) { %>
+                    <div class="seat-container">
+                        <button class="btn extra-button btn-default non-functional-button">
+                            ㅤ
+                        </button>
+                    </div>
+                <% } %>
+                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                <% if (seat) { %>
+                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                    <% const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId); %>
+                    <% const isCancelled = ticket && ticket.status === 'cancelled'; %>
+                    <% const canUnreserve = seat.isReserved && isReservedByCurrentUser; %>
+                    <div class="seat-container">
+                        <div class="dropdown">
+                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                <%= seat.seatNumber %>
+                            </button>
+                            <ul class="dropdown-menu">
+    
+                                <!-- No ticket on seat and  not reserved -->
+                                <% if (!ticket && !seat.isReserved) { %>
+                                    <!-- Empty or cancelled seat options -->
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is a ticket on the seat -->
+                                <% } else if(ticket && !isCancelled) { %>
+                                    <!-- Existing ticket options -->
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">ترحيل التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من ترحيل التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
+    
+                                    <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
+                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
+                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <% } %>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+
+        </div>
+
+        <div class="extra-column">
+            <% for (let i = 0; i < 8; i++) { %>
+                <div class="seat-container">
+                    <button class="btn extra-button btn-default non-functional-button">
+                        ㅤ
+                    </button>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="middle-column">
+
+            <div class="seat-container">
+                <button class="btn extra-button btn-default non-functional-button">
+                    ㅤ
+                </button>
+            </div>
+
+            <% 
+            // Define the specific seat numbers for the right column
+            let secondMiddleColumnSeats = [3, 7, 11, 15, 19, 23, 27]; 
+            %>
+            <% for (let seatNumber of secondMiddleColumnSeats) { %>
+                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                <% if (seat) { %>
+                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                    <% const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId); %>
+                    <% const isCancelled = ticket && ticket.status === 'cancelled'; %>
+                    <% const canUnreserve = seat.isReserved && isReservedByCurrentUser; %>
+                    <div class="seat-container">
+                        <div class="dropdown">
+                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                <%= seat.seatNumber %>
+                            </button>
+                            <ul class="dropdown-menu">
+    
+                                <!-- No ticket on seat and  not reserved -->
+                                <% if (!ticket && !seat.isReserved) { %>
+                                    <!-- Empty or cancelled seat options -->
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is a ticket on the seat -->
+                                <% } else if(ticket && !isCancelled) { %>
+                                    <!-- Existing ticket options -->
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">ترحيل التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من ترحيل التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
+    
+                                    <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
+                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
+                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <% } %>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+
+        <div class="left-column">
+
+            <div class="seat-container">
+                <button class="btn extra-button btn-default non-functional-button">
+                    ㅤ
+                </button>
+            </div>
+
+            <% 
+            // Define the specific seat numbers for the right column
+            const leftColumnSeats = [4, 8, 12, 16, 20, 24, 28]; 
+            %>
+            <% for (let seatNumber of leftColumnSeats) { %>
+                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                <% if (seat) { %>
+                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                    <% const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId); %>
+                    <% const isCancelled = ticket && ticket.status === 'cancelled'; %>
+                    <% const canUnreserve = seat.isReserved && isReservedByCurrentUser; %>
+                    <div class="seat-container">
+                        <div class="dropdown">
+                            <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                                <%= seat.seatNumber %>
+                            </button>
+                            <ul class="dropdown-menu">
+    
+                                <!-- No ticket on seat and  not reserved -->
+                                <% if (!ticket && !seat.isReserved) { %>
+                                    <!-- Empty or cancelled seat options -->
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is a ticket on the seat -->
+                                <% } else if(ticket && !isCancelled) { %>
+                                    <!-- Existing ticket options -->
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
+                                    </li>
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
+                                    </li>
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li class="dropdown-submenu">
+                                        <a class="test" tabindex="-1" href="#">ترحيل التذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من ترحيل التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>                                        
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
+    
+                                    <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
+                                <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
+                                    <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
+    
+                                    <li>
+                                        <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                    </li>
+    
+                                    <!-- Full and Half Ticket options -->
+                                    <li class="dropdown-submenu">
+                                        <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                            </li>
+                                            <li>
+                                                <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <!-- Owner Ticket option -->
+                                    <li>
+                                        <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                    </li>
+    
+                                    <!-- Cancel Ticket option -->
+                                    <li class="dropdown-submenu">
+                                        <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                        <ul class="dropdown-menu" style="text-align: center;">
+                                            <p>هل انت متأكد من الغاء التذكرة</p>
+                                            <li>
+                                                <% if (ticket) { %>
+                                                    <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                                <% } else { %>
+                                                    <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                                <% } %>
+                                            </li>
+                                            <li>
+                                                <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+    
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+    
+                                    <% } %>
+                                
+                            </ul>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Bottom Row for Remaining Seats -->
+    <div class="bottom-row">
+        <% 
+        // Define the specific seat numbers for the bottom row
+        let bottomRowSeats = [16, 17, 14, 15]; 
+        if(seats.length > 22) {
+            bottomRowSeats = [29, 30,  31, 32]
+        }
+        %>
+        <% for (let seatNumber of bottomRowSeats) { %>
+            <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+            <% if (seat) { %>
+                <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                <% const isReservedByCurrentUser = seat.reservedBy && seat.reservedBy.equals(currentUserId); %>
+                <% const isCancelled = ticket && ticket.status === 'cancelled'; %>
+                <% const canUnreserve = seat.isReserved && isReservedByCurrentUser; %>
+                <div class="seat-container">
+                    <div class="dropdown">
+                        <button id="seat" class="btn btn-default dropdown-toggle <%= seat.seatClass %>" type="button" data-toggle="dropdown">
+                            <%= seat.seatNumber %>
+                        </button>
+                        <ul class="dropdown-menu">
+
+                            <!-- No ticket on seat and  not reserved -->
+                            <% if (!ticket && !seat.isReserved) { %>
+                                <!-- Empty or cancelled seat options -->
+                                <li>
+                                    <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                </li>
+
+                                <!-- Full and Half Ticket options -->
+                                <li class="dropdown-submenu">
+                                    <a tabindex="-1" class="test" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Owner Ticket option -->
+                                <li>
+                                    <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                </li>
+
+                                <!-- Cancel Ticket option -->
+                                <li class="dropdown-submenu">
+                                    <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                    <ul class="dropdown-menu" style="text-align: center;">
+                                        <p>هل انت متأكد من الغاء التذكرة</p>
+                                        <li>
+                                            <% if (ticket) { %>
+                                                <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                            <% } else { %>
+                                                <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                            <% } %>
+                                        </li>
+                                        <li>
+                                            <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+
+                                <!-- there is a ticket on the seat -->
+                            <% } else if(ticket && !isCancelled) { %>
+                                <!-- Existing ticket options -->
+                                <li>
+                                    <a href="#" style="color: gray !important; cursor: not-allowed;">حجز مؤقت</a>
+                                </li>
+                                <li>
+                                    <a style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل</a>
+                                </li>
+                                <li>
+                                    <a style="color: gray !important; cursor: not-allowed;" href="#">حجز مالك</a>
+                                </li>
+                                <li class="dropdown-submenu">
+                                    <a class="test" tabindex="-1" href="#">الغاء التذكرة</a>
+                                    <ul class="dropdown-menu" style="text-align: center;">
+                                        <p>هل انت متأكد من الغاء التذكرة</p>
+                                        <li>
+                                            <% if (ticket) { %>
+                                                <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                            <% } else { %>
+                                                <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                            <% } %>                                        
+                                        </li>
+                                        <li>
+                                            <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li class="dropdown-submenu">
+                                    <a class="test" tabindex="-1" href="#">ترحيل التذكرة</a>
+                                    <ul class="dropdown-menu" style="text-align: center;">
+                                        <p>هل انت متأكد من ترحيل التذكرة</p>
+                                        <li>
+                                            <% if (ticket) { %>
+                                                <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/transferDate/<%= ticket._id %>">نعم</a>
+                                            <% } else { %>
+                                                <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                            <% } %>                                        
+                                        </li>
+                                        <li>
+                                            <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li><a href="/tickets/extraWeight/<%= ticket._id %>">وزن الزيادة</a></li>
+
+                                <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
+
+                                <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
+                            <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
+
+                                <li>
+                                    <a href="#" class="toggle-reservation" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                </li>
+
+                                <!-- Full and Half Ticket options -->
+                                <li class="dropdown-submenu">
+                                    <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Owner Ticket option -->
+                                <li>
+                                    <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                </li>
+
+                                <!-- Cancel Ticket option -->
+                                <li class="dropdown-submenu">
+                                    <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                    <ul class="dropdown-menu" style="text-align: center;">
+                                        <p>هل انت متأكد من الغاء التذكرة</p>
+                                        <li>
+                                            <% if (ticket) { %>
+                                                <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                            <% } else { %>
+                                                <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                            <% } %>
+                                        </li>
+                                        <li>
+                                            <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+
+                                <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
+                                <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
+
+                                <li>
+                                    <a href="#" style="color: gray !important; cursor: not-allowed;" data-seat-id="<%= seat._id %>"><%= seat.isReserved ? 'الغاء الحجز المؤقت' : 'حجز مؤقت' %></a>
+                                </li>
+
+                                <!-- Full and Half Ticket options -->
+                                <li class="dropdown-submenu">
+                                    <a tabindex="-1" style="color: gray !important; cursor: not-allowed;" href="#">حجز كامل <i class="fa-solid fa-caret-down"></i></a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-full-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">تذكرة كاملة</a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1" href="/tickets/add-half-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">نصف تذكرة</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <!-- Owner Ticket option -->
+                                <li>
+                                    <a style="color: gray !important; cursor: not-allowed;" href="">حجز مالك</a>
+                                </li>
+
+                                <!-- Cancel Ticket option -->
+                                <li class="dropdown-submenu">
+                                    <a style="color: gray !important; cursor: not-allowed;" tabindex="-1" href="#">الغاء تذكرة</a>
+                                    <ul class="dropdown-menu" style="text-align: center;">
+                                        <p>هل انت متأكد من الغاء التذكرة</p>
+                                        <li>
+                                            <% if (ticket) { %>
+                                                <a style="background-color: green; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="/tickets/cancel/<%= ticket._id %>">نعم</a>
+                                            <% } else { %>
+                                                <a style="background-color: grey; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;">No ticket to cancel</a>
+                                            <% } %>
+                                        </li>
+                                        <li>
+                                            <a style="background-color: red; color: white !important; width: 50%; border-radius: 5px; padding: 10px 0;" href="">لا</a>
+                                        </li>
+                                    </ul>
+                                </li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">ترحيل التذكرة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
+
+                                <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+
+                                <% } %>
+                            
+                        </ul>
+                    </div>
+                </div>
+            <% } %>
+        <% } %>
+    </div>
+</div>

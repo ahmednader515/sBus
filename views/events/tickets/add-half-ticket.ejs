@@ -47,7 +47,8 @@
                 <% if(ticketSetting.price === null) { %>
                     
                 <% } else { %>
-                    <option value="<%= ticketSetting.price %>"><%= ticketSetting.price %></option>
+                    <% price = ticketSetting.price / 2 %>
+                    <option value="<%= price %>"><%= price %></option>
                 <% } %>
             <% } %>
         </select>

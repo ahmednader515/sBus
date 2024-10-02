@@ -120,7 +120,7 @@ router.get('/show-ticket/:seatId', async (req, res) => {
             return res.status(404).send('Ticket not found');
         }
 
-        res.render('events/tickets/ticket-show', { ticket });
+        res.render('events/tickets/show-ticket', { ticket });
     } catch (err) {
         console.error('Error fetching ticket:', err);
         res.status(500).send('Error fetching ticket');
@@ -211,9 +211,10 @@ router.post('/cancel/:ticketId', async (req, res) => {
             (ticket.type === 'حجز مالك' && ticket.ownerName === ownerName && ticket.clientName === clientName && ticket.clientPhoneNumber === clientPhoneNumber && ticket.price === price)
         ) {
             // If validation passes, update ticket status to "cancelled"
-            ticket.status = 'cancelled';
+            ticket.type = 'ملغية';
+            ticket.status = 'ملغية';
             ticket.cancel = cancel;
-            ticket.seatNumber = 'cancelled';
+            ticket.seatNumber = 'تم الغاء التذكرة';
             await ticket.save();
 
             req.flash('success', 'تم إلغاء التذكرة بنجاح');
