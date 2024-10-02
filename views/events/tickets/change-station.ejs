@@ -1,0 +1,23 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body style="text-align: right;" class="d-flex flex-column vh-100">
+    <h1 class="btn-login">تغيير محطة الركوب</h1>
+
+    <form action="/tickets/changeStation/<%= ticket._id %>" method="POST">
+        
+            <label class="form-label" for="fromStation">محطة الركوب الجديدة</label>
+            <select class="form-select" id="fromStation" name="fromStation">
+                <% for(ticketSetting of ticketSettings) { %>
+                    <% if(ticketSetting.fromStation === "") { %>
+                        
+                    <% } else { %>
+                        <option value="<%= ticketSetting.fromStation %>"><%= ticketSetting.fromStation %></option>
+                    <% } %>
+                <% } %>
+            </select>
+
+        <button type="submit" class="btn btn-login">تأكيد</button>
+    </form>
+</body>

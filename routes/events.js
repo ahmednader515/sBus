@@ -271,11 +271,13 @@ router.get('/show-event/:eventId', async (req, res) => {
 
     try {
         const event = await Event.findById(eventId);
-        const tickets = await Ticket.find({ event: eventId });
+        const tickets = await Ticket.find({event: eventId});
         const fullTickets = await Ticket.find({event: eventId, type: 'تذكرة كاملة'})
         const halfTickets = await Ticket.find({event: eventId, type: 'نصف تذكرة'})
         const ownerTickets = await Ticket.find({event: eventId, type: 'حجز مالك'})
         const cancelledTickets = await Ticket.find({event: eventId, type: 'ملغية'})
+        const transferedTickets = await Ticket.find({transferedFrom: eventId, isTransfered: true});
+        const changedSeatTickets = await Ticket.find({event: eventId, isSeatChanged: true})
 
         if (!event) {
             return res.status(404).send('Event not found');
@@ -304,7 +306,7 @@ router.get('/show-event/:eventId', async (req, res) => {
         event.formattedTime = formattedTime; // Add formatted time to the event object
 
         // Pass seatsWithTickets and seats to the view
-        res.render('events/event/show-event', { event, tickets, seatsWithTickets, seats, currentUserId: req.user._id, currentUser: req.user, fullTickets, halfTickets,  cancelledTickets, ownerTickets });
+        res.render('events/event/show-event', { event, tickets, seatsWithTickets, seats, currentUserId: req.user._id, currentUser: req.user, fullTickets, halfTickets,  cancelledTickets, ownerTickets, transferedTickets, changedSeatTickets });
 
     } catch (err) {
         console.error('Error fetching event, tickets, or seats:', err);

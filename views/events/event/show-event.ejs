@@ -69,28 +69,51 @@
         <div class="tickets">
             <h3>التذاكر</h3>
                 <div class="tickets-container">
-                        <table>
-                            <thead>
-                                <td>تذكرة كاملة</td>
-                                <td>نصف تذكرة</td>
-                                <td>تذكرة مالك</td>
-                                <td>ملغية</td>
-                            </thead>
-    
-                            <tbody>
-                                <td><%= fullTickets.length %></td>
-                                <td><%= halfTickets.length %></td>
-                                <td><%= ownerTickets.length %></td>
-                                <td><%= cancelledTickets.length %></td>
-                            </tbody>
-    
-                        </table>
+                        <div class="first-table">
+                            <table>
+                                <thead>
+                                    <td>تذكرة كاملة</td>
+                                    <td>نصف تذكرة</td>
+                                    <td>تذكرة مالك</td>
+                                </thead>
+        
+                                <tbody>
+                                    <td><%= fullTickets.length %></td>
+                                    <td><%= halfTickets.length %></td>
+                                    <td><%= ownerTickets.length %></td>
+                                </tbody>
+        
+                            </table>
+                        </div>
+
+                        <div class="second-table">
+                            <table>
+                                <thead>
+                                    <td>منقولة الي ميعاد اخر</td>
+                                    <td>منقولة الي كرسي اخر</td>
+                                    <td>ملغية</td>
+                                </thead>
+        
+                                <tbody>
+                                    <td><%= transferedTickets.length %></td>
+                                    <td><%= changedSeatTickets.length %></td>
+                                    <td><%= cancelledTickets.length %></td>
+                                </tbody>
+        
+                            </table>
+                        </div>
                     </a>
                 </div>
         </div>
 
         </div>
-    
+
+        <div class="extra-buttons">
+
+            <a class="btn" href="">الطرود</a>
+
+        </div>
+
         <!-- Scripts -->
         <script>
             $(document).ready(function() {

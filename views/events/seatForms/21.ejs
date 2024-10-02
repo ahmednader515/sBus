@@ -76,6 +76,8 @@
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
 
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
+
                                     <!-- there is a ticket on the seat -->
                                 <% } else if(ticket && !isCancelled) { %>
                                     <!-- Existing ticket options -->
@@ -126,6 +128,8 @@
 
                                     <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
 
+                                    <li><a href="/tickets/changeStation/<%= ticket._id %>">تغيير محطة الركوب</a></li>
+
                                     <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
                                 <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
     
@@ -175,6 +179,8 @@
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
 
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
+
                                     <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
                                     <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
     
@@ -223,6 +229,8 @@
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
     
                                     <% } %>
                                 

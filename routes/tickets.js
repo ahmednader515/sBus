@@ -80,6 +80,7 @@ router.post('/add-ticket', async (req, res) => {
         // Get the current tickets for the event to generate the serial number
         const existingTickets = await Ticket.find({});
         const serialNumber = (existingTickets.length + 1).toString().padStart(5, '0'); // Generate serial number (00001, 00002, ...)
+        const transferedFrom = await Event.findById(eventId);
 
         // Create a new ticket
         const newTicket = new Ticket({
@@ -97,7 +98,8 @@ router.post('/add-ticket', async (req, res) => {
             serial: serialNumber,
             cancel,
             date: eventDate,
-            type
+            type,
+            transferedFrom
         });
 
         await newTicket.save();
@@ -284,6 +286,7 @@ router.post('/transferDate/:ticketId', async (req, res) => {
             ticket.event = newEventId;
             ticket.date = newEvent.date;  // Set the ticket date to the new event's date
             ticket.notice = cancel;
+            ticket.isTransfered = true;
 
             await ticket.save();  // Save the updated ticket
 
@@ -412,7 +415,8 @@ router.post('/changeSeat/:ticketId', async (req, res) => {
                 const tempSeat = existingTicket.seatNumber;
                 existingTicket.seatNumber = ticket.seatNumber;
                 ticket.seatNumber = tempSeat;
-
+                ticket.isSeatChanged = true;
+                existingTicket.isSeatChanged = true;
                 // Save both tickets
                 await existingTicket.save();
                 await ticket.save();
@@ -421,10 +425,13 @@ router.post('/changeSeat/:ticketId', async (req, res) => {
             } else {
                 // If the seat is not reserved, simply assign the new seat
                 ticket.seatNumber = newSeat;
+                ticket.isSeatChanged = true;
                 await ticket.save();
 
                 req.flash('success', 'تم تبديل الكرسي بنجاح');
             }
+
+            ticket.isSeatChanged = true;
 
             res.redirect(`/events/show-event/${ticket.event}`);
         } else {
@@ -457,5 +464,39 @@ router.post('/settings', async(req, res) => {
     req.flash('success', 'تم اضافة الإعدادات بنجاح');
     res.redirect('/tickets/settings');
 });
+
+router.get('/changeStation/:id', async(req, res) => {
+    const id =  req.params.id;
+    const ticket = await Ticket.findById(id);
+    const ticketSettings = await Setting.find({});
+    res.render('events/tickets/change-station', { ticketSettings, ticket });
+});
+
+router.post('/changeStation/:ticketId', async (req, res) => {
+    try {
+        const ticketId = req.params.ticketId;
+        const { fromStation } = req.body;
+
+        // Find the ticket by ID
+        const ticket = await Ticket.findById(ticketId);
+
+        if (!ticket) {
+            return console.log('ticket not found')
+        }
+
+        // Update the station
+        ticket.fromStation = fromStation;
+
+        // Save the updated ticket
+        await ticket.save();
+
+        res.redirect(`/events/show-event/${ticket.event}`);
+
+    } catch (error) {
+        // Handle potential errors
+        console.log(error);
+    }
+});
+
 
 module.exports = router;
