@@ -1,0 +1,25 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+<link rel="stylesheet" href="/css/styles.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<body class="d-flex flex-column">
+
+    <% for(package of packages) { %>
+        <div class="package-card">
+            <div class="calendar-card">
+                <div class="texts-container">
+                    <h3>رقم الطرد: <%= package.packageNumber %></h3>
+                </div>
+                <div class="buttons-container">
+                    <a class="btn" href="/tickets/packages/package-new/<%= package.event %>">اضافة طرد جديد</a>
+                    <form class="button-form" action="/tickets/packages-edit/<%= package._id %>" method="GET">
+                        <button class="btn" type="submit">تعديل</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+</body>

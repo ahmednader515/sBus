@@ -4,6 +4,8 @@ const Ticket = require('../models/Ticket');
 const Event = require('../models/Event');
 const Seat = require('../models/Seat');
 const Setting = require('../models/Setting');
+const Package = require('../models/Package');
+const PackageTicket = require('../models/PackageTicket.js');
 
 // Assuming your event model is imported and the route is defined correctly
 
@@ -69,7 +71,7 @@ router.get('/add-owner-ticket/:eventId', async (req, res) => {
 });
 
 router.post('/add-ticket', async (req, res) => {
-    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel ,type, eventDate } = req.body;
+    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel, type, eventDate } = req.body;
 
     try {
         // Ensure the eventId is valid
@@ -498,5 +500,46 @@ router.post('/changeStation/:ticketId', async (req, res) => {
     }
 });
 
+// Define static routes first
+router.get('/packages/package-new/:eventId', async (req, res) => {
+    const eventId = req.params.eventId;
+    const event = await Event.findById(eventId);
+    res.render('events/tickets/packages/new-package', {event});
+});
+
+router.get('/packages/package-edit', (req, res) => {
+    res.render('events/tickets/packages/edit-package');
+});
+
+// Dynamic routes after static routes
+router.get('/packages/:eventId', async (req, res) => {
+    const eventId = req.params.eventId;
+    const packages = await Package.find({ event: eventId });
+    res.render('events/tickets/packages', { packages });
+});
+
+router.post('/packages/package-new', async(req, res) => {
+    const { date, billNumber, senderName, senderPhoneNumber, senderCardNumber, recieverName, recieverPhoneNumber, packageContent, packagePrice, eventId } = req.body;
+    const existingPackages = await PackageTicket.find({});
+    // const package = await 
+    const packageNumber = (existingPackages.length + 1).toString().padStart(5, '0'); // Generate serial number (00001, 00002, ...)
+
+    const newPackageTicket = new PackageTicket ({
+        packageNumber,
+        date,
+        billNumber,
+        senderName,
+        senderPhoneNumber,
+        senderCardNumber,
+        recieverName,
+        recieverPhoneNumber,
+        packageContent,
+        packagePrice,
+    });
+
+    newPackageTicket.save();
+
+    res.redirect(`/tickets/packages/${eventId}`);
+});
 
 module.exports = router;

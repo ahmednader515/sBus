@@ -4,6 +4,7 @@ const Event = require('../models/Event');
 const Calendar = require('../models/Calendar');
 const Ticket = require('../models/Ticket');
 const Seat = require('../models/Seat');
+const Package = require('../models/Package');
 
 // Render the calendar page
 router.get('/', (req, res) => {
@@ -115,6 +116,16 @@ router.post('/add-event', async (req, res) => {
                 event: newEvent._id
             });
             await newSeat.save();
+        }
+
+        for (let i = 1; i <= 10; i++) {
+            const newPackage = new Package({
+                event: newEvent._id,
+                packageNumber: i
+            });
+
+            // Save each package
+            await newPackage.save();
         }
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
