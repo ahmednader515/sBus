@@ -39,6 +39,10 @@ const eventSchema = new Schema({
     enum: ['21', '22', '32', '52', '54', '56'],
     required: true
   },
+  created_at: {
+    type: Date,
+    default:  Date.now,
+  }
 });
 
 const Event = mongoose.model('Event', eventSchema);

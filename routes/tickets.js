@@ -4,8 +4,9 @@ const Ticket = require('../models/Ticket');
 const Event = require('../models/Event');
 const Seat = require('../models/Seat');
 const Setting = require('../models/Setting');
-const Package = require('../models/Package');
-const PackageTicket = require('../models/PackageTicket.js');
+const pdf = require('html-pdf-node');
+const path = require('path');
+const ejs = require('ejs');
 
 // Assuming your event model is imported and the route is defined correctly
 
@@ -500,46 +501,76 @@ router.post('/changeStation/:ticketId', async (req, res) => {
     }
 });
 
-// Define static routes first
-router.get('/packages/package-new/:eventId', async (req, res) => {
-    const eventId = req.params.eventId;
-    const event = await Event.findById(eventId);
-    res.render('events/tickets/packages/new-package', {event});
-});
+router.get('/download-pdf-ticket/:seatNumber', async (req, res) => {
+    const seatNumber = req.params.seatNumber;
 
-router.get('/packages/package-edit', (req, res) => {
-    res.render('events/tickets/packages/edit-package');
-});
+    // Retrieve the ticket from the database based on the seatNumber
+    const ticket = await Ticket.findOne({ seatNumber: seatNumber });
 
-// Dynamic routes after static routes
-router.get('/packages/:eventId', async (req, res) => {
-    const eventId = req.params.eventId;
-    const packages = await Package.find({ event: eventId });
-    res.render('events/tickets/packages', { packages });
-});
+    // If no ticket exists for the seat number, show an error flash message
+    if (!ticket) {
+        req.flash('error', `لا يوجد تذكرة للكرسي المحدد`);
+        return res.redirect(req.get('referer'));
+    }
 
-router.post('/packages/package-new', async(req, res) => {
-    const { date, billNumber, senderName, senderPhoneNumber, senderCardNumber, recieverName, recieverPhoneNumber, packageContent, packagePrice, eventId } = req.body;
-    const existingPackages = await PackageTicket.find({});
-    // const package = await 
-    const packageNumber = (existingPackages.length + 1).toString().padStart(5, '0'); // Generate serial number (00001, 00002, ...)
+    // HTML content for the ticket
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/ticket-print.ejs'), {ticket});
 
-    const newPackageTicket = new PackageTicket ({
-        packageNumber,
-        date,
-        billNumber,
-        senderName,
-        senderPhoneNumber,
-        senderCardNumber,
-        recieverName,
-        recieverPhoneNumber,
-        packageContent,
-        packagePrice,
+    // Generate PDF from the HTML content
+    const options = { format: 'A4' };
+    const file = { content: htmlContent };
+
+    pdf.generatePdf(file, options).then(pdfBuffer => {
+        // Set response headers
+        res.setHeader('Content-Disposition', `attachment; filename=ticket-${ticket.serial}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Send the PDF file to the client
+        res.send(pdfBuffer);
+    }).catch(err => {
+        console.error(err);
+        req.flash('error', 'Failed to generate PDF');
+        res.redirect('back');
     });
+});
 
-    newPackageTicket.save();
+router.get('/download-pdf-report/:eventId', async (req, res) => {
+    const eventId = req.params.eventId;
 
-    res.redirect(`/tickets/packages/${eventId}`);
+    // Retrieve the ticket from the database based on the seatNumber
+    const tickets = await Ticket.find({ event: eventId });
+    const  event = await Event.findById(eventId);
+    
+    // Convert "HH:mm" format to 12-hour format with AM/PM
+    const convertTo12HourFormat = (time24) => {
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+        return `${hour12}:${minutes} ${ampm}`;
+    };
+
+    const eventTime = convertTo12HourFormat(event.time);
+
+    // HTML content for the ticket
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/report-print.ejs'), {tickets, event, eventTime});
+
+    // Generate PDF from the HTML content
+    const options = { format: 'A4' };
+    const file = { content: htmlContent };
+
+    pdf.generatePdf(file, options).then(pdfBuffer => {
+        // Set response headers
+        res.setHeader('Content-Disposition', `attachment; filename=report-${event._id}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Send the PDF file to the client
+        res.send(pdfBuffer);
+    }).catch(err => {
+        console.error(err);
+        req.flash('error', 'Failed to generate PDF');
+        res.redirect('back');
+    });
 });
 
 module.exports = router;

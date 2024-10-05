@@ -1,0 +1,46 @@
+<% layout('layouts/boilerplate') %>
+
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body class="d-flex flex-column">
+<h1 class="btn-login">طرد جديد</h1>
+
+<form action="/events/packages/new-package" method="POST">
+    <label class="form-label" for="date">التاريخ</label>
+    <input class="form-control" type="date" name="date" id="date" required>
+
+    <label class="form-label" for="billNumber">رقم بوليصة الشحن</label>
+    <input class="form-control" type="text" name="billNumber" id="billNumber" required>
+
+    <label class="form-label" for="senderName">اسم الراسل</label>
+    <input class="form-control" type="text" name="senderName" id="senderName" required>
+
+    <label class="form-label" for="senderPhoneNumber">رقم تيليفون الراسل</label>
+    <input class="form-control" type="text" name="senderPhoneNumber" id="senderPhoneNumber" required>
+
+    <label class="form-label" for="senderCardNumber">رقم بطاقة الراسل</label>
+    <input class="form-control" type="text" name="senderCardNumber" id="senderCardNumber" required>
+
+    <label class="form-label" for="recieverName">اسم المرسل اليه</label>
+    <input class="form-control" type="text" name="recieverName" id="recieverName" required>
+
+    <label class="form-label" for="recieverPhoneNumber">رقم تيليفون المرسل اليه</label>
+    <input class="form-control" type="text" name="recieverPhoneNumber" id="recieverPhoneNumber" required>
+
+    <label class="form-label" for="packageContents">محتويات الشحنة</label>
+    <input class="form-control" type="text" name="packageContents" id="packageContents" required>
+
+    <label class="form-label" for="price">القيمة المدفوعة</label>
+    <input class="form-control" type="text" name="price" id="price" required>
+
+    <input class="form-control" type="hidden" name="createdBy" value="<%= createdBy._id %>" required>
+    <input class="form-control" type="hidden" name="eventId" value="<%= eventId %>" required>
+    <input class="form-control" type="hidden" name="packageNumber" value="<%= packageNumber %>" required>    
+
+    <label class="form-label" for="notice">الملاحظات</label>
+    <textarea class="form-control" name="notice" id="notice">لا ملاحظات</textarea>
+
+    <button class="btn btn-login" type="submit">اضافة طرد جديد</button>
+</form>
+</body>

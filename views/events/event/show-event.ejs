@@ -69,7 +69,7 @@
         <div class="tickets">
             <h3>التذاكر</h3>
                 <div class="tickets-container">
-                        <div class="first-table">
+                        <div class="table">
                             <table>
                                 <thead>
                                     <td>تذكرة كاملة</td>
@@ -86,7 +86,7 @@
                             </table>
                         </div>
 
-                        <div class="second-table">
+                        <div class="table">
                             <table>
                                 <thead>
                                     <td>منقولة الي ميعاد اخر</td>
@@ -103,14 +103,14 @@
                             </table>
                         </div>
 
-                        <div class="third-table">
+                        <div class="table">
                             <table>
                                 <thead>
                                     <td>الطرود</td>
                                 </thead>
         
                                 <tbody>
-                                    <td>0</td>
+                                    <td><%= packages.length %></td>
                                 </tbody>
         
                             </table>
@@ -123,7 +123,32 @@
 
         <div class="extra-buttons">
 
-            <a class="btn" href="/tickets/packages/<%= event._id %>">الطرود</a>
+            <div class="dropdown">
+                <button data-toggle="dropdown" type="button" class="btn dropdown-toggle">الطرود</button>
+                <ul class="dropdown-menu">
+                    <% for (let i = 1; i <= 10; i++) { %>
+                        <% const packageExists = packages.some(pkg => pkg.packageNumber == i); %>
+                        <li>
+                            <a href="/events/packages/<%= event._id %>/<%= i %>" 
+                               <% if (packageExists) { %>
+                                   style="color: gray !important; pointer-events: none;"
+                               <% } else { %>
+                                   style="color: black; pointer-events: auto;"
+                               <% } %>
+                            >
+                                الطرد <%= i %>
+                            </a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+            
+            
+            
+
+            <a class="btn" href="#" data-toggle="modal" data-target="#seatSelectionModal">طباعة التذاكر</a>
+
+            <a style="margin: 0" class="btn" href="/tickets/download-pdf-report/<%= event._id %>">طباعة التقرير</a>
 
         </div>
 

@@ -1,0 +1,18 @@
+<!-- views/ticket.ejs -->
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .ticket { text-align: center; margin-top: 50px; }
+        h1 { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="ticket">
+        <h1>Event Ticket</h1>
+        <p>Seat Number: <%= ticket.seatNumber %></p>
+        <p>Event: <%= ticket.event %></p>
+        <p>Date: <%= ticket.date %></p>
+    </div>
+</body>
+</html>
