@@ -4,9 +4,61 @@
 
 <div class="service-text"></div>
 
-    <h1>لوحة تحكم مالك</h1>
+    <h1 class="btn-login">مرحبا بك يا <%= currentUser.name %></h1>
 
 </div>
-<br>
-<a href="/events/calendars">Calendar list</a>
+
+<div class="container"></div>
+
+    <div class="row align-items-center justify-content-center">
+
+        <div class="col-sm">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">قائمة التقويمات</h5>
+                    <a href="/events/calendars" class="btn">اضغط هنا</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-sm">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">فتح حساب موظف</h5>
+                    <a href="/register" class="btn">اضغط هنا</a>
+    
+                </div>
+
+            </div>
+        
+        </div>
+
+        <div class="col-sm">
+
+            <div class="card">
+
+                <div class="card-body">
+
+                    <h5 class="card-title">الاعدادات</h5>
+                    <a href="/tickets/settings" class="btn">اضغط هنا</a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
 </body>

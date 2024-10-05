@@ -221,7 +221,7 @@ form {
 }
 
 .seat-temporary {
-  background-color: blue !important; /* Change to any color you want */
+  background-color: rgb(21, 21, 21) !important; /* Change to any color you want */
   color: white !important;
 }
 
@@ -230,7 +230,6 @@ form {
 }
 
 .tickets-container {
-  background-color: white;
   border-radius: 5px;
   text-align: right;
 }

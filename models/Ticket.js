@@ -1,4 +1,4 @@
-const { required } = require('joi');
+const { required, boolean } = require('joi');
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -68,6 +68,7 @@ const ticketSchema = new Schema({
   },
   extraPrice: {
     type: Number,
+    default: null,
   },
   weightType: {
     type:  String,
@@ -78,7 +79,21 @@ const ticketSchema = new Schema({
   },
   notice: {
     type: String,
-  }
+    default: 'لا ملاحظات'
+  },
+  isTransfered: {
+    type: Boolean,
+    default:  false,
+  },
+  isSeatChanged: {
+    type: Boolean,
+    default:  false,
+  },
+  transferedFrom: {
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'Event', 
+    default: null // Tracks the event the ticket was transferred from
+  },
 });
 
 

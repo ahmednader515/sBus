@@ -197,7 +197,8 @@ footer {
 
 .detail-container {
     display: flex;
-    width: 80%;
+    gap: 100px;
+    width: 100%;
     margin: auto;
     align-items: center;
     justify-content: space-between;
@@ -486,7 +487,6 @@ footer {
 
 .tickets-container {
     margin: 25px 0;
-    box-shadow: 5px 7px 88px 0px rgba(122,122,122,1);
 }
 
 .seats {
@@ -500,6 +500,20 @@ footer {
 .tickets table td {
     padding: 20px;
     white-space: nowrap;
+}
+
+.extra-buttons {
+    text-align: center;
+    width: 20%;
+    margin-bottom: 50px;
+    margin-right: 75%;
+    background-color: white;
+    border-radius: 5px;
+    padding: 30px;
+}
+
+.table {
+    box-shadow: 5px 7px 88px 0px rgba(122,122,122,1);
 }
 
 @media only screen and (max-width: 600px) {

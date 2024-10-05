@@ -1,3 +1,119 @@
+<div class="modal fade" id="seatSelectionModal" tabindex="-1" role="dialog" aria-labelledby="seatSelectionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="seatSelectionModalTitle">اختر مقعد</h5>
+            </div>
+            <div style="text-align: center;" class="modal-body">
+                <div style="width: 70%; margin:auto;" class="seats-layout">
+                    <div class="top-section">
+                        <div class="right-column">
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            const rightColumnSeatsModal = [1, 21, 20, 19, 18]; 
+                            %>
+                            <% for (let seatNumber of rightColumnSeatsModal) { %>
+                                <% if(seatNumber === 1) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                        </div>
+                
+                        <div class="extra-column">
+                            <% for (let i = 0; i < 6; i++) { %>
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                
+                        <div class="middle-column">
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            let middleColumnSeatsModal = [2, 4, 6, 8, 10, 12]; 
+                            %>
+                            <% for (let seatNumber of middleColumnSeatsModal) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                
+                        </div>
+                
+                        <div class="left-column">
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            const leftColumnSeatsModal = [3, 5, 7, 9, 11, 13]; 
+                            %>
+                            <% for (let seatNumber of leftColumnSeatsModal) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                
+                    <!-- Bottom Row for Remaining Seats -->
+                    <div class="bottom-row">
+                        <% 
+                        // Define the specific seat numbers for the bottom row
+                        let bottomRowSeatsModal = [16, 17, 14, 15]; 
+                        %>
+                        <% for (let seatNumber of bottomRowSeatsModal) { %>
+                            <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                            <% if (seat) { %>
+                                <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                <div class="seat-container">
+                                    <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                       href="/tickets/download-pdf-ticket/<%= seat.seatNumber %>">
+                                       <%= seat.seatNumber %>
+                                    </a>
+                                </div>                                    
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="seats-layout">
     <div class="top-section">
         <div class="right-column">
@@ -76,6 +192,8 @@
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
 
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
+
                                     <!-- there is a ticket on the seat -->
                                 <% } else if(ticket && !isCancelled) { %>
                                     <!-- Existing ticket options -->
@@ -126,6 +244,8 @@
 
                                     <li><a href="/tickets/changeSeat/<%= ticket._id %>">تبديل المقعد</a></li>
 
+                                    <li><a href="/tickets/changeStation/<%= ticket._id %>">تغيير محطة الركوب</a></li>
+
                                     <!-- there is no ticket on the seat and the seat is reserved and the user can unreserve it -->
                                 <% }else if(!ticket && seat.isReserved && canUnreserve) { %>
     
@@ -175,6 +295,8 @@
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
 
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
+
                                     <!-- there is no ticket on the seat and the seat is reserved and the user cannot unreserve it -->
                                     <% } else if(!ticket && seat.isReserved && !canUnreserve) { %>
     
@@ -223,6 +345,8 @@
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">وزن الزيادة</a></li>
 
                                     <li><a style="color: gray !important; cursor: not-allowed;" href="">تبديل المقعد</a></li>
+
+                                    <li><a style="color: gray !important; cursor: not-allowed;" href="">تغيير محطة الركوب</a></li>
     
                                     <% } %>
                                 

@@ -4,6 +4,7 @@ const Event = require('../models/Event');
 const Calendar = require('../models/Calendar');
 const Ticket = require('../models/Ticket');
 const Seat = require('../models/Seat');
+const Package = require('../models/Package');
 
 // Render the calendar page
 router.get('/', (req, res) => {
@@ -115,6 +116,16 @@ router.post('/add-event', async (req, res) => {
                 event: newEvent._id
             });
             await newSeat.save();
+        }
+
+        for (let i = 1; i <= 10; i++) {
+            const newPackage = new Package({
+                event: newEvent._id,
+                packageNumber: i
+            });
+
+            // Save each package
+            await newPackage.save();
         }
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
@@ -271,11 +282,14 @@ router.get('/show-event/:eventId', async (req, res) => {
 
     try {
         const event = await Event.findById(eventId);
-        const tickets = await Ticket.find({ event: eventId });
+        const tickets = await Ticket.find({event: eventId});
         const fullTickets = await Ticket.find({event: eventId, type: 'تذكرة كاملة'})
         const halfTickets = await Ticket.find({event: eventId, type: 'نصف تذكرة'})
         const ownerTickets = await Ticket.find({event: eventId, type: 'حجز مالك'})
         const cancelledTickets = await Ticket.find({event: eventId, type: 'ملغية'})
+        const transferedTickets = await Ticket.find({transferedFrom: eventId, isTransfered: true});
+        const changedSeatTickets = await Ticket.find({event: eventId, isSeatChanged: true})
+        const packages = await Package.find({event: eventId});
 
         if (!event) {
             return res.status(404).send('Event not found');
@@ -304,7 +318,7 @@ router.get('/show-event/:eventId', async (req, res) => {
         event.formattedTime = formattedTime; // Add formatted time to the event object
 
         // Pass seatsWithTickets and seats to the view
-        res.render('events/event/show-event', { event, tickets, seatsWithTickets, seats, currentUserId: req.user._id, currentUser: req.user, fullTickets, halfTickets,  cancelledTickets, ownerTickets });
+        res.render('events/event/show-event', { event, tickets, seatsWithTickets, seats, currentUserId: req.user._id, currentUser: req.user, fullTickets, halfTickets,  cancelledTickets, ownerTickets, transferedTickets, changedSeatTickets, packages });
 
     } catch (err) {
         console.error('Error fetching event, tickets, or seats:', err);
@@ -343,6 +357,67 @@ router.post('/toggle-reserve/:seatId', async (req, res) => {
     }
 });
 
+router.get('/packages/:eventId/:packageNumber', async(req, res) => {
+    const { eventId, packageNumber } = req.params;
+    const  createdBy = req.user;
 
+    try {
+        const packages = await Package.find({ event: eventId });
+        res.render('events/event/packages', {createdBy, eventId, packageNumber, packages});
+    } catch(error) {
+        console.error(error);
+        req.flash('error', 'حدث خطأ أثناء استرجاع الطرود');
+        res.redirect('/some-error-page');
+    }
+});
+
+router.post('/packages/new-package', async (req, res) => {
+    const { 
+        date,
+        billNumber,
+        senderName,
+        senderPhoneNumber,
+        senderCardNumber,
+        recieverName,
+        recieverPhoneNumber,
+        packageContents,
+        price,
+        createdBy,
+        notice,
+        eventId,
+        packageNumber
+     } = req.body;
+    
+    try {
+
+        const existingPackages = await Package.find({});
+        const serialNumber = (existingPackages.length + 1).toString().padStart(5, '0');
+
+        const newPackage = new Package({
+            date,
+            packageNumber: packageNumber,
+            event: eventId,
+            billNumber,
+            senderName,
+            senderPhoneNumber,
+            senderCardNumber,
+            recieverName,
+            recieverPhoneNumber,
+            packageContents,
+            price,
+            createdBy: createdBy, // Ensure it maps to created_by correctly
+            notice,
+            serial: serialNumber,
+        });
+
+        await newPackage.save();
+        req.flash('success', 'تم انشاء طرد جديد بنجاح');
+        res.redirect(`/events/show-event/${eventId}`);
+    } catch (error) {
+        console.error(error);
+        req.flash('error', 'حدث خطأ أثناء إنشاء الطرد');
+        res.redirect(`/events/show-event/${eventId}`);
+    }
+});
 
 module.exports = router;

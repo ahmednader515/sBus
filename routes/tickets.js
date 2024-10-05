@@ -4,6 +4,9 @@ const Ticket = require('../models/Ticket');
 const Event = require('../models/Event');
 const Seat = require('../models/Seat');
 const Setting = require('../models/Setting');
+const pdf = require('html-pdf-node');
+const path = require('path');
+const ejs = require('ejs');
 
 // Assuming your event model is imported and the route is defined correctly
 
@@ -69,7 +72,7 @@ router.get('/add-owner-ticket/:eventId', async (req, res) => {
 });
 
 router.post('/add-ticket', async (req, res) => {
-    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel ,type, eventDate } = req.body;
+    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel, type, eventDate } = req.body;
 
     try {
         // Ensure the eventId is valid
@@ -80,6 +83,7 @@ router.post('/add-ticket', async (req, res) => {
         // Get the current tickets for the event to generate the serial number
         const existingTickets = await Ticket.find({});
         const serialNumber = (existingTickets.length + 1).toString().padStart(5, '0'); // Generate serial number (00001, 00002, ...)
+        const transferedFrom = await Event.findById(eventId);
 
         // Create a new ticket
         const newTicket = new Ticket({
@@ -97,7 +101,8 @@ router.post('/add-ticket', async (req, res) => {
             serial: serialNumber,
             cancel,
             date: eventDate,
-            type
+            type,
+            transferedFrom
         });
 
         await newTicket.save();
@@ -284,6 +289,7 @@ router.post('/transferDate/:ticketId', async (req, res) => {
             ticket.event = newEventId;
             ticket.date = newEvent.date;  // Set the ticket date to the new event's date
             ticket.notice = cancel;
+            ticket.isTransfered = true;
 
             await ticket.save();  // Save the updated ticket
 
@@ -412,7 +418,8 @@ router.post('/changeSeat/:ticketId', async (req, res) => {
                 const tempSeat = existingTicket.seatNumber;
                 existingTicket.seatNumber = ticket.seatNumber;
                 ticket.seatNumber = tempSeat;
-
+                ticket.isSeatChanged = true;
+                existingTicket.isSeatChanged = true;
                 // Save both tickets
                 await existingTicket.save();
                 await ticket.save();
@@ -421,10 +428,13 @@ router.post('/changeSeat/:ticketId', async (req, res) => {
             } else {
                 // If the seat is not reserved, simply assign the new seat
                 ticket.seatNumber = newSeat;
+                ticket.isSeatChanged = true;
                 await ticket.save();
 
                 req.flash('success', 'تم تبديل الكرسي بنجاح');
             }
+
+            ticket.isSeatChanged = true;
 
             res.redirect(`/events/show-event/${ticket.event}`);
         } else {
@@ -456,6 +466,111 @@ router.post('/settings', async(req, res) => {
     await newSetting.save();
     req.flash('success', 'تم اضافة الإعدادات بنجاح');
     res.redirect('/tickets/settings');
+});
+
+router.get('/changeStation/:id', async(req, res) => {
+    const id =  req.params.id;
+    const ticket = await Ticket.findById(id);
+    const ticketSettings = await Setting.find({});
+    res.render('events/tickets/change-station', { ticketSettings, ticket });
+});
+
+router.post('/changeStation/:ticketId', async (req, res) => {
+    try {
+        const ticketId = req.params.ticketId;
+        const { fromStation } = req.body;
+
+        // Find the ticket by ID
+        const ticket = await Ticket.findById(ticketId);
+
+        if (!ticket) {
+            return console.log('ticket not found')
+        }
+
+        // Update the station
+        ticket.fromStation = fromStation;
+
+        // Save the updated ticket
+        await ticket.save();
+
+        res.redirect(`/events/show-event/${ticket.event}`);
+
+    } catch (error) {
+        // Handle potential errors
+        console.log(error);
+    }
+});
+
+router.get('/download-pdf-ticket/:seatNumber', async (req, res) => {
+    const seatNumber = req.params.seatNumber;
+
+    // Retrieve the ticket from the database based on the seatNumber
+    const ticket = await Ticket.findOne({ seatNumber: seatNumber });
+
+    // If no ticket exists for the seat number, show an error flash message
+    if (!ticket) {
+        req.flash('error', `لا يوجد تذكرة للكرسي المحدد`);
+        return res.redirect(req.get('referer'));
+    }
+
+    // HTML content for the ticket
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/ticket-print.ejs'), {ticket});
+
+    // Generate PDF from the HTML content
+    const options = { format: 'A4' };
+    const file = { content: htmlContent };
+
+    pdf.generatePdf(file, options).then(pdfBuffer => {
+        // Set response headers
+        res.setHeader('Content-Disposition', `attachment; filename=ticket-${ticket.serial}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Send the PDF file to the client
+        res.send(pdfBuffer);
+    }).catch(err => {
+        console.error(err);
+        req.flash('error', 'Failed to generate PDF');
+        res.redirect('back');
+    });
+});
+
+router.get('/download-pdf-report/:eventId', async (req, res) => {
+    const eventId = req.params.eventId;
+
+    // Retrieve the ticket from the database based on the seatNumber
+    const tickets = await Ticket.find({ event: eventId });
+    const  event = await Event.findById(eventId);
+    
+    // Convert "HH:mm" format to 12-hour format with AM/PM
+    const convertTo12HourFormat = (time24) => {
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+        return `${hour12}:${minutes} ${ampm}`;
+    };
+
+    const eventTime = convertTo12HourFormat(event.time);
+
+    // HTML content for the ticket
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/report-print.ejs'), {tickets, event, eventTime});
+
+    // Generate PDF from the HTML content
+    const options = { format: 'A4' };
+    const file = { content: htmlContent };
+
+    pdf.generatePdf(file, options).then(pdfBuffer => {
+        // Set response headers
+        res.setHeader('Content-Disposition', `attachment; filename=report-${event._id}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Send the PDF file to the client
+        res.send(pdfBuffer);
+    }).catch(err => {
+        console.error(err);
+        req.flash('error', 'Failed to generate PDF');
+        res.redirect('back');
+    });
 });
 
 module.exports = router;
