@@ -89,7 +89,7 @@
         }
     
         .middle-section img {
-            width: 80%;
+            width: 100%;
             margin-top: 5px;
         }
     
@@ -117,17 +117,16 @@
         
         <div class="ticket-info">
             <div class="ticket-number">
-                <span class="label"><%= ticket.serial %></span>
+                <span class="label"><%= package.serial %></span>
             </div>
             <div class="details">
-                <p><strong>تاريخ السفر:</strong> <%= ticket.date %></p>
+                <p><strong>تاريخ السفر:</strong> <%= package.date %></p>
                 <p><%= eventTime %> : <strong>ميعاد السفر</strong></p>
-                <p><strong>رقم المقعد:</strong> <%= ticket.seatNumber %></p>
-                <p><strong>اسم العميل:</strong> <%= ticket.clientName %></p>
-                <p><strong>رقم تيليفون العميل:</strong> <%= ticket.clientPhoneNumber %></p>
-                <p><strong>نوع التذكرة:</strong> <%= ticket.type %></p>
-                <p><strong>نوع الخدمة:</strong> <%= ticket.ticketClass %></p>
-                <p><strong>المبلغ المطلوب:</strong> <%= ticket.price %> ج.م</p>
+                <p><strong>رقم الطرد:</strong> <%= package.packageNumber %></p>
+                <p><strong>اسم الراسل:</strong> <%= package.senderName %></p>
+                <p><strong>رقم تيليفون الراسل:</strong> <%= package.senderPhoneNumber %></p>
+                <p><strong>اسم المستلم:</strong> <%= package.recieverName %></p>
+                <p><strong>رقم تيليفون المستلم:</strong> <%= package.recieverPhoneNumber %></p>
             </div>
         </div>
 
@@ -144,12 +143,12 @@
 
         <div class="ticket-info">
             <div class="ticket-number">
-                <span class="label"><%= ticket.serial %></span>
+                <span class="label"><%= package.serial %></span>
             </div>
             <div class="details">
-                <p><strong>تاريخ السفر:</strong> <%= ticket.date %></p>
+                <p><strong>تاريخ السفر:</strong> <%= package.date %></p>
                 <p><%= eventTime %> : <strong>ميعاد السفر</strong></p>
-                <p><strong>رقم المقعد:</strong> <%= ticket.seatNumber %></p>
+                <p><strong>رقم الطرد:</strong> <%= package.packageNumber %></p>
             </div>
         </div>
 

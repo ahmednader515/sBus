@@ -5,6 +5,7 @@ const Calendar = require('../models/Calendar');
 const Ticket = require('../models/Ticket');
 const Seat = require('../models/Seat');
 const Package = require('../models/Package');
+const mongoose = require('mongoose');
 
 // Render the calendar page
 router.get('/', (req, res) => {
@@ -417,6 +418,89 @@ router.post('/packages/new-package', async (req, res) => {
         console.error(error);
         req.flash('error', 'حدث خطأ أثناء إنشاء الطرد');
         res.redirect(`/events/show-event/${eventId}`);
+    }
+});
+
+router.get('/packages/transferDate/:eventId/:packageNumber', async(req, res) => {
+    const { eventId, packageNumber } = req.params;
+
+    try {
+
+        // Validate eventId
+        if (!mongoose.Types.ObjectId.isValid(eventId)) {
+            req.flash('error', 'Invalid Event ID');
+            return res.redirect('back');
+        }
+
+        const currentEvent = await Event.findById(eventId);
+
+        // Find the package using mongoose.Types.ObjectId
+        const package = await Package.findOne({
+            packageNumber: packageNumber,
+            event: currentEvent._id
+        });
+        const events = await Event.find({});
+
+
+        // If Package not found, return an error
+        if (!package) {
+            req.flash('error', 'Package not found');
+            return res.redirect('back');
+        }
+
+        // Render the cancel-ticket.ejs view and pass the ticket details
+        res.render('events/packages/transfer-date', { package, events, eventId });
+    } catch (err) {
+        console.error('Error fetching package for transfering:', err);
+        req.flash('error', 'Server error while fetching ticket');
+    }
+});
+
+router.post('/packages/transferDate/:eventId/:packageNumber', async (req, res) => {
+    const { newEventId, senderName, senderPhoneNumber, price, transfer } = req.body;
+    const { eventId, packageNumber } = req.params;  // Get the package details from the request params
+
+    try {
+        // Fetch the package based on the provided eventId and packageNumber
+        const package = await Package.findOne({ event: eventId, packageNumber: packageNumber });
+
+        // If package not found, send an error
+        if (!package) {
+            req.flash('error', 'Package not found');
+            return res.redirect('back');
+        }
+
+        // Verify the details entered match the package details
+        if (
+            package.senderName === senderName &&
+            package.senderPhoneNumber === senderPhoneNumber &&
+            package.price === price
+        ) {
+            // Fetch the new event using the newEventId
+            const newEvent = await Event.findById(newEventId);
+            if (!newEvent) {
+                req.flash('error', 'Invalid event selected.');
+                return res.redirect('back');
+            }
+
+            // Update the package with the new event and date
+            package.event = newEventId;
+            package.date = newEvent.date;  // Set the package date to the new event's date
+            package.notice = transfer;
+            package.isTransfered = true;
+
+            await package.save();  // Save the updated package
+
+            req.flash('success', 'تم نقل الطرد إلى ميعاد الجديد بنجاح');
+            res.redirect(`/events/show-event/${newEventId}`);
+        } else {
+            // If validation fails, send an error message
+            req.flash('error', 'بيانات غير صحيحة. الرجاء التأكد من صحة البيانات المدخلة.');
+            res.redirect(`/events/packages/transferDate/${eventId}/${packageNumber}`); // Redirect back to the form
+        }
+    } catch (err) {
+        console.error('Error transferring package:', err);
+        res.status(500).send('Server error while transferring package');
     }
 });
 

@@ -58,6 +58,12 @@ const packageSchema = new Schema({
     ref: 'User',
     required: true
   },
+  notice: {
+    type: String,
+  },
+  isTransfered: {
+    type: Boolean,
+  }
 });
 
 

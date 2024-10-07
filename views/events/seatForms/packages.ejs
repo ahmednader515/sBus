@@ -1,0 +1,22 @@
+<div class="modal fade" id="packageSelectionModal" tabindex="-1" role="dialog" aria-labelledby="packageSelectionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="packageSelectionModalTitle">اختر طرد</h5>
+            </div>
+            <div style="text-align: center;" class="modal-body">
+
+                <% for (let i = 1; i <= 10; i++) { %>
+                    <% const packageExists = packages.some(pkg => pkg.packageNumber == i); %>
+                        <a class="btn" href="/tickets/download-pdf-package/<%= event._id %>/<%= i %>">
+                            الطرد <%= i %>
+                        </a>
+                <% } %>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>

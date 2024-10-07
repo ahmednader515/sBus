@@ -4,9 +4,11 @@ const Ticket = require('../models/Ticket');
 const Event = require('../models/Event');
 const Seat = require('../models/Seat');
 const Setting = require('../models/Setting');
+const Package = require('../models/Package');
 const pdf = require('html-pdf-node');
 const path = require('path');
 const ejs = require('ejs');
+const fs = require('fs');
 
 // Assuming your event model is imported and the route is defined correctly
 
@@ -72,7 +74,7 @@ router.get('/add-owner-ticket/:eventId', async (req, res) => {
 });
 
 router.post('/add-ticket', async (req, res) => {
-    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel, type, eventDate } = req.body;
+    const { ticketFromStation, ownerName ,fromStation, clientName, clientPhoneNumber, ticketClass, price, cardType, cardNumber, eventId, seatNumber, cancel, type, eventDate, eventTime } = req.body;
 
     try {
         // Ensure the eventId is valid
@@ -101,6 +103,7 @@ router.post('/add-ticket', async (req, res) => {
             serial: serialNumber,
             cancel,
             date: eventDate,
+            time: eventTime,
             type,
             transferedFrom
         });
@@ -113,22 +116,6 @@ router.post('/add-ticket', async (req, res) => {
     } catch (err) {
         console.error('Error creating ticket:', err);
         res.status(500).send('Error creating the ticket.');
-    }
-});
-
-router.get('/show-ticket/:seatId', async (req, res) => {
-    try {
-        const seatId = req.params.seatId;
-        const ticket = await Ticket.findById(seatId);
-
-        if (!ticket) {
-            return res.status(404).send('Ticket not found');
-        }
-
-        res.render('events/tickets/show-ticket', { ticket });
-    } catch (err) {
-        console.error('Error fetching ticket:', err);
-        res.status(500).send('Error fetching ticket');
     }
 });
 
@@ -501,11 +488,35 @@ router.post('/changeStation/:ticketId', async (req, res) => {
     }
 });
 
-router.get('/download-pdf-ticket/:seatNumber', async (req, res) => {
-    const seatNumber = req.params.seatNumber;
+router.get('/download-pdf-ticket/:eventId/:seatNumber', async (req, res) => {
+    const {seatNumber, eventId} = req.params;
+
+    const logoPath = path.join(__dirname, '../public/images/logo.jpeg');
+    const logoBase64 = fs.readFileSync(logoPath, 'base64');
+    const logoDataUri = `data:image/jpeg;base64,${logoBase64}`;
+    
+    const busPath = path.join(__dirname, '../public/images/bus.png');
+    const busBase64 = fs.readFileSync(busPath, 'base64');
+    const busDataUri = `data:image/png;base64,${busBase64}`;
+
+    const cairoFontPath = path.join(__dirname, '../fonts/static/Cairo-Regular.ttf');
+    const cairoFontBase64 = fs.readFileSync(cairoFontPath, 'base64');
+    const cairoFontDataUri = `data:font/ttf;base64,${cairoFontBase64}`; 
 
     // Retrieve the ticket from the database based on the seatNumber
-    const ticket = await Ticket.findOne({ seatNumber: seatNumber });
+    const ticket = await Ticket.findOne({ seatNumber: seatNumber, event: eventId });
+    const  event = await Event.findById(eventId);
+
+        // Convert "HH:mm" format to 12-hour format with AM/PM
+        const convertTo12HourFormat = (time24) => {
+            const [hours, minutes] = time24.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+            return `${hour12}:${minutes} ${ampm}`;
+        };
+    
+        const eventTime = convertTo12HourFormat(event.time);
 
     // If no ticket exists for the seat number, show an error flash message
     if (!ticket) {
@@ -514,10 +525,11 @@ router.get('/download-pdf-ticket/:seatNumber', async (req, res) => {
     }
 
     // HTML content for the ticket
-    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/ticket-print.ejs'), {ticket});
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/ticket-print.ejs'), 
+    {ticket, eventTime, logoDataUri, busDataUri, cairoFontDataUri});
 
     // Generate PDF from the HTML content
-    const options = { format: 'A4' };
+    const options = { width: '5cm', height: '15cm', printBackground: true };
     const file = { content: htmlContent };
 
     pdf.generatePdf(file, options).then(pdfBuffer => {
@@ -537,31 +549,70 @@ router.get('/download-pdf-ticket/:seatNumber', async (req, res) => {
 router.get('/download-pdf-report/:eventId', async (req, res) => {
     const eventId = req.params.eventId;
 
-    // Retrieve the ticket from the database based on the seatNumber
+    const cairoFontPath = path.join(__dirname, '../fonts/static/Cairo-Regular.ttf');
+    const cairoFontBase64 = fs.readFileSync(cairoFontPath, 'base64');
+    const cairoFontDataUri = `data:font/ttf;base64,${cairoFontBase64}`; 
+
+    // Retrieve the ticket from the database based on the eventId
     const tickets = await Ticket.find({ event: eventId });
-    const  event = await Event.findById(eventId);
-    
-    // Convert "HH:mm" format to 12-hour format with AM/PM
+    const event = await Event.findById(eventId);
+    const seats = await Seat.find({event: eventId});
+    const fullTickets = await Ticket.find({event: eventId, type: 'تذكرة كاملة'})
+    const halfTickets = await Ticket.find({event: eventId, type: 'نصف تذكرة'})
+    const ownerTickets = await Ticket.find({event: eventId, type: 'حجز مالك'})
+    const cancelledTickets = await Ticket.find({event: eventId, type: 'ملغية'})
+    const transferedTickets = await Ticket.find({transferedFrom: eventId, isTransfered: true});
+    const changedSeatTickets = await Ticket.find({event: eventId, isSeatChanged: true})
+    const packages = await Package.find({event: eventId});
+
+    // Set and save the printed_at timestamp
+    event.printed_at = Date.now();
+    await event.save();
+
+    // Helper function to format date as (YYYY/MM/DD) (HH/MM AM/PM)
+    const formatDateTime = (date) => {
+        const d = new Date(date);
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const day = String(d.getDate()).padStart(2, '0');
+
+        // Get hours and minutes
+        const hours = d.getHours();
+        const minutes = String(d.getMinutes()).padStart(2, '0');
+
+        // Determine AM/PM
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const hour12 = String(hours % 12 || 12).padStart(2, '0'); // Convert 0 to 12 for midnight
+
+        return `(${year}/${month}/${day}) (${hour12}:${minutes} ${ampm})`;
+    };
+
+    // Format the printed_at date
+    const printedAtFormatted = formatDateTime(event.printed_at);
+
+    // Convert "HH:mm" format to 12-hour format with AM/PM for event time
     const convertTo12HourFormat = (time24) => {
         const [hours, minutes] = time24.split(':');
         const hour = parseInt(hours);
         const ampm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+        const hour12 = String(hour % 12 || 12).padStart(2, '0'); // Convert 0 to 12 for midnight
         return `${hour12}:${minutes} ${ampm}`;
     };
 
     const eventTime = convertTo12HourFormat(event.time);
 
     // HTML content for the ticket
-    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/report-print.ejs'), {tickets, event, eventTime});
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/report-print.ejs'), 
+    {tickets, event, eventTime, printedAtFormatted, cairoFontDataUri, seats, fullTickets, halfTickets, ownerTickets, packages, cancelledTickets, transferedTickets, changedSeatTickets});
+
 
     // Generate PDF from the HTML content
-    const options = { format: 'A4' };
+    const options = { format: 'A4', printBackground: true };
     const file = { content: htmlContent };
 
     pdf.generatePdf(file, options).then(pdfBuffer => {
         // Set response headers
-        res.setHeader('Content-Disposition', `attachment; filename=report-${event._id}.pdf`);
+        res.setHeader('Content-Disposition', `attachment; filename=report-${event.date}-${eventTime}.pdf`);
         res.setHeader('Content-Type', 'application/pdf');
 
         // Send the PDF file to the client
@@ -571,6 +622,70 @@ router.get('/download-pdf-report/:eventId', async (req, res) => {
         req.flash('error', 'Failed to generate PDF');
         res.redirect('back');
     });
+});
+
+router.get('/download-pdf-package/:eventId/:packageNumber', async (req, res) => {
+    const {packageNumber, eventId} = req.params;
+
+    const logoPath = path.join(__dirname, '../public/images/logo.jpeg');
+    const logoBase64 = fs.readFileSync(logoPath, 'base64');
+    const logoDataUri = `data:image/jpeg;base64,${logoBase64}`;
+    
+    const busPath = path.join(__dirname, '../public/images/bus.png');
+    const busBase64 = fs.readFileSync(busPath, 'base64');
+    const busDataUri = `data:image/png;base64,${busBase64}`;
+
+    const cairoFontPath = path.join(__dirname, '../fonts/static/Cairo-Regular.ttf');
+    const cairoFontBase64 = fs.readFileSync(cairoFontPath, 'base64');
+    const cairoFontDataUri = `data:font/ttf;base64,${cairoFontBase64}`; 
+
+    // Retrieve the ticket from the database based on the seatNumber
+    const package = await Package.findOne({ packageNumber: packageNumber, event: eventId });
+    const  event = await Event.findById(eventId);
+
+        // Convert "HH:mm" format to 12-hour format with AM/PM
+    const convertTo12HourFormat = (time24) => {
+        const [hours, minutes] = time24.split(':');
+        const hour = parseInt(hours);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour % 12 || 12; // Convert 0 to 12 for midnight
+        return `${hour12}:${minutes} ${ampm}`;
+    };
+    
+    const eventTime = convertTo12HourFormat(event.time);
+
+    // If no ticket exists for the seat number, show an error flash message
+    if (!package) {
+        req.flash('error', `لا يوجد طرد`);
+        return res.redirect(req.get('referer'));
+    }
+
+    // HTML content for the ticket
+    const htmlContent = await ejs.renderFile(path.join(__dirname, '../views/events/event/package-print.ejs'), 
+    {package, eventTime, logoDataUri, busDataUri, cairoFontDataUri});
+
+    // Generate PDF from the HTML content
+    const options = { width: '5cm', height: '15cm', printBackground: true };
+    const file = { content: htmlContent };
+
+    pdf.generatePdf(file, options).then(pdfBuffer => {
+        // Set response headers
+        res.setHeader('Content-Disposition', `attachment; filename=package-${package.serial}.pdf`);
+        res.setHeader('Content-Type', 'application/pdf');
+
+        // Send the PDF file to the client
+        res.send(pdfBuffer);
+    }).catch(err => {
+        console.error(err);
+        req.flash('error', 'Failed to generate PDF');
+        res.redirect('back');
+    });
+});
+
+router.get('/show-ticket/:seatNumber', async(req, res) => {
+    const {seatNumber} = req.params;
+    const ticket = await Ticket.find({seatNumber: seatNumber});
+    res.render('events/event/ticket-print.ejs', {ticket})
 });
 
 module.exports = router;
