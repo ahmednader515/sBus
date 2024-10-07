@@ -42,7 +42,10 @@ const eventSchema = new Schema({
   created_at: {
     type: Date,
     default:  Date.now,
-  }
+  },
+  printed_at: {
+    type: Date,
+  },
 });
 
 const Event = mongoose.model('Event', eventSchema);

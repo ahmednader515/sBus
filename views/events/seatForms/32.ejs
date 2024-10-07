@@ -1,3 +1,158 @@
+<div class="modal fade" id="seatSelectionModal" tabindex="-1" role="dialog" aria-labelledby="seatSelectionModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="seatSelectionModalTitle">اختر مقعد</h5>
+            </div>
+            <div style="text-align: center;" class="modal-body">
+                <div style="width: 80%; margin: auto;" class="seats-layout">
+                    <div class="top-section">
+                        <div class="right-column">
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            const rightColumnSeatsModal = [1, 5, 9, 13, 17, 21, 25]; 
+                            %>
+                            <% for (let seatNumber of rightColumnSeatsModal) { %>
+                                <% if(seatNumber === 5) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= event._id %>/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                        </div>
+                
+                        <div class="middle-column">
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            let firstMiddleColumnSeatsModal = [2, 6, 10, 14, 18, 22, 26]; 
+                            %>
+                            <% for (let seatNumber of firstMiddleColumnSeatsModal) { %>
+                                <% if(seatNumber === 6) { %>
+                                    <div class="seat-container">
+                                        <button class="btn extra-button btn-default non-functional-button">
+                                            ㅤ
+                                        </button>
+                                    </div>
+                                <% } %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= event._id %>/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                
+                        </div>
+                
+                        <div class="extra-column">
+                            <% for (let i = 0; i < 8; i++) { %>
+                                <div class="seat-container">
+                                    <button class="btn extra-button btn-default non-functional-button">
+                                        ㅤ
+                                    </button>
+                                </div>
+                            <% } %>
+                        </div>
+                
+                        <div class="middle-column">
+                
+                            <div class="seat-container">
+                                <button class="btn extra-button btn-default non-functional-button">
+                                    ㅤ
+                                </button>
+                            </div>
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            let secondMiddleColumnSeatsModal = [3, 7, 11, 15, 19, 23, 27]; 
+                            %>
+                            <% for (let seatNumber of secondMiddleColumnSeatsModal) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= event._id %>/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                        </div>
+                
+                        <div class="left-column">
+                
+                            <div class="seat-container">
+                                <button class="btn extra-button btn-default non-functional-button">
+                                    ㅤ
+                                </button>
+                            </div>
+                
+                            <% 
+                            // Define the specific seat numbers for the right column
+                            const leftColumnSeatsModal = [4, 8, 12, 16, 20, 24, 28]; 
+                            %>
+                            <% for (let seatNumber of leftColumnSeatsModal) { %>
+                                <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                                <% if (seat) { %>
+                                    <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                    <div class="seat-container">
+                                        <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                           href="/tickets/download-pdf-ticket/<%= event._id %>/<%= seat.seatNumber %>">
+                                           <%= seat.seatNumber %>
+                                        </a>
+                                    </div>                                    
+                                <% } %>
+                            <% } %>
+                        </div>
+                    </div>
+                
+                    <!-- Bottom Row for Remaining Seats -->
+                    <div class="bottom-row">
+                        <% 
+                        // Define the specific seat numbers for the bottom row
+                        let bottomRowSeatsModal = [29, 30,  31, 32]; 
+                        %>
+                        <% for (let seatNumber of bottomRowSeatsModal) { %>
+                            <% const seat = seats.find(s => s.seatNumber === seatNumber); %>
+                            <% if (seat) { %>
+                                <% const ticket = seatsWithTickets[seat.seatNumber];  %>
+                                <div class="seat-container">
+                                    <a style="margin: 0;" class="btn btn-default <%= seat.seatClass %>" 
+                                       href="/tickets/download-pdf-ticket/<%= event._id %>/<%= seat.seatNumber %>">
+                                       <%= seat.seatNumber %>
+                                    </a>
+                                </div>                                    
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">إغلاق</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="seats-layout">
     <div class="top-section">
         <div class="right-column">
@@ -946,10 +1101,7 @@
     <div class="bottom-row">
         <% 
         // Define the specific seat numbers for the bottom row
-        let bottomRowSeats = [16, 17, 14, 15]; 
-        if(seats.length > 22) {
-            bottomRowSeats = [29, 30,  31, 32]
-        }
+        let bottomRowSeats = [29, 30,  31, 32]; 
         %>
         <% for (let seatNumber of bottomRowSeats) { %>
             <% const seat = seats.find(s => s.seatNumber === seatNumber); %>

@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+<link rel="stylesheet" href="/css/global.css">
+<link rel="stylesheet" href="/css/nav.css">
+
+<body style="text-align: right;" class="d-flex flex-column">
+    <h1 class="btn-login">تأكيد بيانات العميل</h1>
+
+    <form action="/events/packages/transferDate/<%= eventId %>/<%= package.packageNumber %>" method="POST">
+        
+            <label class="form-label" for="senderName">اسم الراسل</label>
+            <input type="text" id="senderName" name="senderName" class="form-control" placeholder="مثال: محمد احمد خالد">
+
+            <label class="form-label" for="senderPhoneNumber">رقم تيليفون الراسل</label>
+            <input type="text" id="senderPhoneNumber" name="senderPhoneNumber" class="form-control" placeholder="مثال: 01085901353">
+
+            <label class="form-label" for="price">قيمة التذكرة</label>
+            <input type="number" id="price" name="price" class="form-control">
+
+            <label class="form-label" for="selectedDate">تاريخ الترحيل</label>
+            <select id="newEventId" name="newEventId" class="form-control">
+                <% events.forEach(function(event) { %>
+                    <option value="<%= event._id %>"><%= event.date %></option>
+                <% }) %>
+            </select>
+
+            <label class="form-label" for="transfer">سبب الترحيل</label>
+            <input type="text" id="transfer" name="transfer" class="form-control">
+
+        <button type="submit" class="btn btn-login">تأكيد</button>
+    </form>
+</body>

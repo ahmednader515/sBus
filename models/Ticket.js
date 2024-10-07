@@ -28,7 +28,7 @@ const ticketSchema = new Schema({
   },
   ticketClass: {
     type: String,
-    enum: ['First Class', 'VIP', 'economy'],
+    enum: ['فيرست كلاس', 'في اي بي', 'ايكونومي'],
     required: true,
   },
   price: {
@@ -63,6 +63,10 @@ const ticketSchema = new Schema({
     default: Date.now
   },
   date: {
+    type: String,
+    required: true
+  },
+  time: {
     type: String,
     required: true
   },
