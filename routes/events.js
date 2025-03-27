@@ -110,27 +110,30 @@ router.post('/add-event', async (req, res) => {
 
         await newEvent.save();
 
-        // Create seats based on the number of seats selected
-        for (let i = 1; i <= numberOfSeats; i++) {
-            const newSeat = new Seat({
-                seatNumber: i,
+        // Create seats concurrently
+        const seatPromises = Array.from({ length: numberOfSeats }, (_, i) => {
+            return new Seat({
+                seatNumber: i + 1,
                 event: newEvent._id
-            });
-            await newSeat.save();
-        }
+            }).save();
+        });
 
-        for (let i = 1; i <= 10; i++) {
-            const newPackage = new Package({
+        // Create packages concurrently
+        const packagePromises = Array.from({ length: 10 }, (_, i) => {
+            return new Package({
                 event: newEvent._id,
-                packageNumber: i
-            });
+                packageNumber: i + 1
+            }).save();
+        });
 
-            // Save each package
-            await newPackage.save();
-        }
+        await Promise.all([...seatPromises, ...packagePromises]);
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
-        res.redirect('/events/calendars/' + calendar);
+
+        // Add a short delay before redirecting (optional)
+        setTimeout(() => {
+            res.redirect('/events/calendars/' + calendar);
+        }, 300); // 300ms delay
     } catch (err) {
         console.error(err);
         res.status(500).send('Error creating event or seats.');
