@@ -1,0 +1,5 @@
+[build]
+    command = "npm install && npm run build"
+    functions = "functions"
+    publish = "public"
+    node_bundler = "esbuild"
