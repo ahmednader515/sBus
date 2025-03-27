@@ -131,11 +131,19 @@ router.post('/add-event', async (req, res) => {
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
 
-        // Delay slightly to give Render time to sync changes
-        await delay(500); // 500ms delay
+        // Delay to give Render time to sync (optional)
+        await delay(500);
 
-        // Use 303 for better redirect behavior after a POST
-        res.status(303).redirect(`/events/calendars/${calendar}`);
+        // Ensure the event loop finishes before redirecting
+        setImmediate(() => {
+            res.writeHead(303, {
+                Location: `/events/calendars/${calendar}`,
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            });
+            res.end();
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('Error creating event or seats.');
