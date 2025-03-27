@@ -92,7 +92,6 @@ router.post('/add-event', async (req, res) => {
         numberOfSeats
     } = req.body;
 
-    try {
         // Create a new event
         const newEvent = new Event({
             date,
@@ -131,10 +130,6 @@ router.post('/add-event', async (req, res) => {
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
         res.redirect('/events/calendars/' + calendar);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Error creating event or seats.');
-    }
 });
 
 // Edit Event Route
