@@ -135,15 +135,7 @@ router.post('/add-event', async (req, res) => {
         await delay(500);
 
         // Ensure the event loop finishes before redirecting
-        setImmediate(() => {
-            res.writeHead(303, {
-                Location: `/events/calendars/${calendar}`,
-                'Cache-Control': 'no-cache, no-store, must-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            });
-            res.end();
-        });
+        res.redirect(`/events/calendars/${calendar}`);
     } catch (err) {
         console.error(err);
         res.status(500).send('Error creating event or seats.');
