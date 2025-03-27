@@ -19,6 +19,7 @@ const ticketRoutes = require('./routes/tickets');
 const dbUrl = process.env.DB_URL;
 const dbUrlLocal = 'mongodb://localhost:27017/sBus';
 mongoose.connect(dbUrl, {
+    keepAlive: true
 });
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
