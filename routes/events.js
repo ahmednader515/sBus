@@ -77,6 +77,8 @@ router.get('/month/:year/:month', async (req, res) => {
 });
 
 // Add Event Route
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
 router.post('/add-event', async (req, res) => {
     const {
         date,
@@ -110,34 +112,34 @@ router.post('/add-event', async (req, res) => {
 
         await newEvent.save();
 
-        // Create seats concurrently
-        const seatPromises = Array.from({ length: numberOfSeats }, (_, i) => {
-            return new Seat({
+        // Create seats and packages concurrently
+        const seatPromises = Array.from({ length: numberOfSeats }, (_, i) =>
+            new Seat({
                 seatNumber: i + 1,
                 event: newEvent._id
-            }).save();
-        });
+            }).save()
+        );
 
-        // Create packages concurrently
-        const packagePromises = Array.from({ length: 10 }, (_, i) => {
-            return new Package({
+        const packagePromises = Array.from({ length: 10 }, (_, i) =>
+            new Package({
                 event: newEvent._id,
                 packageNumber: i + 1
-            }).save();
-        });
+            }).save()
+        );
 
         await Promise.all([...seatPromises, ...packagePromises]);
 
         req.flash('success', 'تم اضافة ميعاد جديد بنجاح');
 
-        // Add a short delay before redirecting (optional)
-        setTimeout(() => {
-            res.redirect('/events/calendars/' + calendar);
-        }, 300); // 300ms delay
+        // Delay slightly to give Render time to sync changes
+        await delay(500); // 500ms delay
+
+        // Use 303 for better redirect behavior after a POST
+        res.status(303).redirect(`/events/calendars/${calendar}`);
     } catch (err) {
         console.error(err);
         res.status(500).send('Error creating event or seats.');
-    }  
+    }
 });
 
 // Edit Event Route
