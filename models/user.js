@@ -19,7 +19,15 @@ const UserSchema = new Schema({
     }
 });
 
-// Disable email field creation
-UserSchema.plugin(passportLocalMongoose, { usernameField: 'username', usernameUnique: true });
+UserSchema.plugin(passportLocalMongoose, {
+    usernameField: 'username',
+    usernameUnique: true,
+    selectFields: false,
+    usernameQueryFields: ['username'],
+    findByUsername: function(model, queryParameters) {
+        delete queryParameters.email;
+        return model.findOne(queryParameters);
+    }
+});
 
 module.exports = mongoose.model('User', UserSchema);
