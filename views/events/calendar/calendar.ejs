@@ -47,8 +47,14 @@
 
 <div id="event-list"></div>
 
-<a href="/events/add-event" class="btn">فتح ميعاد جديد</a>
+
+<% if(currentUser.type === "owner") { %>
+    <a href="/events/add-event" class="btn">فتح ميعاد جديد</a>
+<% } %>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="/javascripts/calendar.js"></script>
+<script>
+    const userType = '<%= currentUser ? currentUser.type : "" %>';
+</script>
 </body>

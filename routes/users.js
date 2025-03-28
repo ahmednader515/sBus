@@ -21,9 +21,9 @@ router.get('/owners/dashboard', isOwnerLoggedIn, catchAsync(async (req, res) => 
 
 router.get("/login", (req, res) => {
     if(req.user.type === 'user') {
-        res.redirect('/dashboard')
+        res.redirect('/owners/dashboard')
     }else if (req.user.type === 'admin') {
-        res.redirect('/admins/dashboard')
+        res.redirect('/owners/dashboard')
     } else if (req.user.type === 'owner') {
         res.redirect('/owners/dashboard')
     }
@@ -36,12 +36,12 @@ router.post("/login", storeReturnTo, passport.authenticate('user-local', {
 }), (req, res) => {
     if(req.user.type === 'user') {
         req.flash("success", "مرحبا بك");
-        const redirectUrl = res.locals.returnTo || '/dashboard';
+        const redirectUrl = res.locals.returnTo || '/owners/dashboard';
         delete res.locals.returnTo;
         res.redirect(redirectUrl);
     } else if(req.user.type === 'admin') {
         req.flash("success", "مرحبا بك");
-        const redirectUrl = res.locals.returnTo || '/admins/dashboard';
+        const redirectUrl = res.locals.returnTo || '/owners/dashboard';
         delete res.locals.returnTo;
         res.redirect(redirectUrl);
     } else if(req.user.type === 'owner') {
