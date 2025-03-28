@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const passportLocalMongoose = require('passport-local-mongoose')
+const passportLocalMongoose = require('passport-local-mongoose');
 
 const UserSchema = new Schema({
     username: {
         type: String,
-        required: true, // Ensure username is required
-        unique: true    // Ensure username is unique
+        required: true,
+        unique: true
     },
     name: {
         type: String,
@@ -17,8 +17,9 @@ const UserSchema = new Schema({
         lowercase: true,
         enum: ['user', 'admin', 'owner']
     }
-})
+});
 
-UserSchema.plugin(passportLocalMongoose)
+// Disable email field creation
+UserSchema.plugin(passportLocalMongoose, { usernameField: 'username', usernameUnique: true });
 
-module.exports = mongoose.model('User', UserSchema)
+module.exports = mongoose.model('User', UserSchema);
