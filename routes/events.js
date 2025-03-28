@@ -171,9 +171,9 @@ router.get('/edit-calendar/:id', (req, res) => {
 // Update Event Route
 router.post('/update-event/:id', (req, res) => {
     const eventId = req.params.id;
-    const { event, date ,description, time, type, numberOfSeats } = req.body;
+    const { event, date ,description, time, type, numberOfSeats, notice } = req.body;
 
-    Event.findByIdAndUpdate(eventId, { name: event, date, description, time, type, numberOfSeats }, { new: true })
+    Event.findByIdAndUpdate(eventId, { name: event, date, description, time, type, numberOfSeats, notice }, { new: true })
     .then(editedEvent => {
         req.flash('success', 'تم تعديل الميعاد بنجاح');
         res.redirect(`/events/calendars/${editedEvent.calendar}`);

@@ -18,7 +18,7 @@ const ticketRoutes = require('./routes/tickets');
 // Database Connection
 const dbUrl = process.env.DB_URL;
 const dbUrlLocal = 'mongodb://localhost:27017/sBus';
-mongoose.connect(dbUrl, {});
+mongoose.connect(dbUrlLocal, {});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => console.log('Database connected'));

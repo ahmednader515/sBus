@@ -8,7 +8,8 @@ document.addEventListener('submit', () => {
 // Show loading on link click (for internal links)
 document.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (e) => {
-        if (link.href.startsWith(window.location.origin)) {
+        // Only show loading if the link has an explicit href attribute
+        if (link.hasAttribute('href') && link.getAttribute('href') !== '#' && link.href.startsWith(window.location.origin)) {
             loadingOverlay.style.display = 'flex';
         }
     });

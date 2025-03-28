@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     let currentDate = new Date();
     let currentView = 'ذهاب';
 
@@ -7,14 +7,27 @@ $(document).ready(function() {
 
     renderYearDropdown();
 
-    // === Utility Functions ===
+    // ==============================
+    // ✅ Show/Hide Loading
+    // ==============================
+    function showLoading() {
+        $('#loading-overlay').fadeIn();
+    }    
+
+    function hideLoading() {
+        $('#loading-overlay').fadeOut();
+    }
+
+    // ==============================
+    // ✅ Format Date and Time
+    // ==============================
     function formatDate(date) {
-        return date.toLocaleDateString('en-CA'); // 'en-CA' formats the date as YYYY-MM-DD
+        return date.toLocaleDateString('en-CA'); // 'YYYY-MM-DD'
     }
 
     function formatTime(time) {
-        const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-        const fullDateTime = `${today}T${time}`;
+        const today = new Date().toISOString().split('T')[0]; 
+        const fullDateTime = `${today}T${time}`; 
         const eventTime = new Date(fullDateTime);
 
         if (isNaN(eventTime.getTime())) {
@@ -29,15 +42,9 @@ $(document).ready(function() {
         });
     }
 
-    function showLoading() {
-        $('#loading-overlay').fadeIn();
-    }
-
-    function hideLoading() {
-        $('#loading-overlay').fadeOut();
-    }
-
-    // === Calendar Rendering ===
+    // ==============================
+    // ✅ Render Calendar
+    // ==============================
     function renderCalendar(date, eventDays = []) {
         const year = date.getFullYear();
         const month = date.getMonth();
@@ -52,17 +59,16 @@ $(document).ready(function() {
         $('#calendar').empty();
         let calendarHTML = '<tr>';
         const daysOfWeek = ['الأحد', 'الأثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
         for (let day of daysOfWeek) {
             calendarHTML += `<th>${day}</th>`;
         }
         calendarHTML += '</tr><tr>';
 
-        // Fill empty days before the first day of the month
         for (let i = 0; i < firstDay; i++) {
             calendarHTML += '<td></td>';
         }
 
-        // Fill calendar days
         for (let day = 1; day <= daysInMonth; day++) {
             if ((firstDay + day - 1) % 7 === 0 && day !== 1) {
                 calendarHTML += '</tr><tr>';
@@ -79,6 +85,9 @@ $(document).ready(function() {
         $('#calendar').append(calendarHTML);
     }
 
+    // ==============================
+    // ✅ Render Year Dropdown
+    // ==============================
     function renderYearDropdown() {
         const yearDropdown = $('#year-dropdown');
         const currentYear = currentDate.getFullYear();
@@ -94,30 +103,24 @@ $(document).ready(function() {
         yearDropdown.val(currentYear);
     }
 
-    // === Fetch Data ===
+    // ==============================
+    // ✅ Fetch Events
+    // ==============================
     function fetchMonthEvents(date) {
         const year = date.getFullYear();
         const month = date.getMonth();
         const calendarId = $('#calendar-id').val();
 
-        showLoading();
-        return $.get(`/events/month/${year}/${month}?calendarId=${calendarId}`)
-            .done(data => {
-                const eventDays = data.events.map(event => event.date);
-                renderCalendar(date, eventDays);
-            })
-            .fail(() => {
-                alert('Failed to load events.');
-            })
-            .always(() => hideLoading());
+        return $.get(`/events/month/${year}/${month}?calendarId=${calendarId}`);
     }
 
     function fetchEventsForDate(date, type) {
         const calendarId = $('#calendar-id').val();
 
         showLoading();
-        $.get(`/events/event/${date}?type=${type}&calendarId=${calendarId}`, function(data) {
+        return $.get(`/events/event/${date}?type=${type}&calendarId=${calendarId}`, function (data) {
             $('#event-list').empty();
+
             const events = data.events;
             if (events.length > 0) {
                 events.forEach(event => {
@@ -146,44 +149,77 @@ $(document).ready(function() {
             } else {
                 $('#event-list').append(`<p class="event-card">لا يوجد مواعيد ${type} في هذا التاريخ</p>`);
             }
-        }).fail(() => {
-            alert('Failed to load events.');
-        }).always(() => hideLoading());
+
+            hideLoading();
+        });
     }
 
-    // === Initialize Calendar ===
+    function renderFullCalendar() {
+        showLoading();
+        fetchMonthEvents(currentDate).then(data => {
+            const eventDays = data.events.map(event => event.date);
+            renderCalendar(currentDate, eventDays);
+            hideLoading();
+        });
+    }
+
+    // ==============================
+    // ✅ Initialize the Calendar
+    // ==============================
     renderYearDropdown();
-    fetchMonthEvents(currentDate);
+    renderFullCalendar();
     fetchEventsForDate(formatDate(currentDate), currentView);
 
-    // === Event Listeners ===
-    $('#calendar').on('click', '.day', function() {
+    // ==============================
+    // ✅ Click Event: Select Date
+    // ==============================
+    $('#calendar').on('click', '.day', function () {
         $('.day').removeClass('selected');
         $(this).addClass('selected');
 
         const selectedDate = $(this).data('date');
         $('#selected-date').text(selectedDate);
+
         fetchEventsForDate(selectedDate, currentView);
     });
 
-    // Navigation and Dropdown
-    $('#prev-month, #next-month, #month-dropdown, #year-dropdown').on('click change', function() {
-        if ($(this).is('#prev-month')) {
-            currentDate.setMonth(currentDate.getMonth() - 1);
-        } else if ($(this).is('#next-month')) {
-            currentDate.setMonth(currentDate.getMonth() + 1);
-        } else if ($(this).is('#month-dropdown')) {
-            currentDate.setMonth(parseInt($(this).val()));
-        } else if ($(this).is('#year-dropdown')) {
-            currentDate.setFullYear(parseInt($(this).val()));
-        }
-        fetchMonthEvents(currentDate);
+    // ==============================
+    // ✅ Navigation and Dropdowns
+    // ==============================
+    $('#prev-month').click(function () {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        renderFullCalendar();
     });
 
-    // Switch Event Type
-    $('#show-going, #show-return').on('click', function() {
-        currentView = $(this).attr('id') === 'show-going' ? 'ذهاب' : 'عودة';
-        $('#event-type').text(`مواعيد ال${currentView}`);
+    $('#next-month').click(function () {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        renderFullCalendar();
+    });
+
+    $('#month-dropdown').change(function () {
+        currentDate.setMonth(parseInt($(this).val()));
+        renderFullCalendar();
+    });
+
+    $('#year-dropdown').change(function () {
+        currentDate.setFullYear(parseInt($(this).val()));
+        renderFullCalendar();
+    });
+
+    // ==============================
+    // ✅ Switch Between "Going" and "Return"
+    // ==============================
+    $('#show-going').click(function () {
+        currentView = 'ذهاب';
         fetchEventsForDate(formatDate(currentDate), currentView);
+        $('#event-type').text(`مواعيد ال${currentView}`);
+        $('#selected-date').text(formatDate(currentDate));
+    });
+
+    $('#show-return').click(function () {
+        currentView = 'عودة';
+        fetchEventsForDate(formatDate(currentDate), currentView);
+        $('#event-type').text(`مواعيد ال${currentView}`);
+        $('#selected-date').text(formatDate(currentDate));
     });
 });
