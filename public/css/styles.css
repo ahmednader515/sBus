@@ -30,8 +30,8 @@
   }
 
   .day.selected {
-    background-color: #add8e6; /* Light blue color for the selected day */
-    color: #000; /* Change text color if needed */
+    background-color: #add8e6;
+    color: #000;
   }
 
  /* Card-like styling for events */
