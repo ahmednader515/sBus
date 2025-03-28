@@ -17,7 +17,7 @@ const ticketRoutes = require('./routes/tickets');
 
 // Database Connection
 const dbUrl = process.env.DB_URL;
-const dbUrlLocal = 'mongodb://localhost:27017/sBus';
+const dbUrlLocal = 'mongodb://0.0.0.0:27017/sBus';
 mongoose.connect(dbUrl, {});
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
@@ -146,9 +146,9 @@ app.get('/', (req, res) => {
     if(req.user && req.user.type === 'owner') {
         res.redirect('/owners/dashboard');
     } else if(req.user && req.user.type === 'admin') {
-        res.redirect('/admins/dashboard')
+        res.redirect('/owners/dashboard')
     } else if(req.user && req.user.type === 'user') {
-        res.redirect('/dashboard')
+        res.redirect('/owners/dashboard')
     } else {
         res.render('users/login')
     }

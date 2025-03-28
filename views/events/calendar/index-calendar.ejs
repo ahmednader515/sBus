@@ -12,17 +12,25 @@
             </div>
             <div class="buttons-container">
                 <a class="btn" href="/events/calendars/<%= calendar._id %>">المزيد</a>
-                <form class="button-form" action="/events/edit-calendar/<%= calendar._id %>" method="GET">
-                    <button class="btn" type="submit">تعديل</button>
-                </form>
-                <form class="button-form" action="/events/delete-calendar/<%= calendar._id %>" method="POST">
-                    <button class="btn" type="submit">مسح</button>
-                </form>
+                <% if(currentUser.type === "owner") { %>
+                    <form class="button-form" action="/events/edit-calendar/<%= calendar._id %>" method="GET">
+                        <button class="btn" type="submit">تعديل</button>
+                    </form>
+                    <form class="button-form" action="/events/delete-calendar/<%= calendar._id %>" method="POST">
+                        <button class="btn" type="submit">مسح</button>
+                    </form>
+                <% } else if(currentUser.type === "admin") { %>
+                    <form class="button-form" action="/events/edit-calendar/<%= calendar._id %>" method="GET">
+                        <button class="btn" type="submit">تعديل</button>
+                    </form>
+                <% } %>
             </div>
         </div>
     <% } %>
     <br>
-    <a href="/events/add-calendar" class="btn">اضافة تقويم جديد</a>
+    <% if(currentUser.type === "owner") { %>
+        <a href="/events/add-calendar" class="btn">اضافة تقويم جديد</a>
+    <% } %>
     </main>
 </body>
 <% } else { %> 

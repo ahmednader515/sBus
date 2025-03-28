@@ -164,9 +164,11 @@
                                     </li>
     
                                     <!-- Owner Ticket option -->
-                                    <li>
-                                        <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
-                                    </li>
+                                    <% if(currentUser.type === "owner") { %>
+                                        <li>
+                                            <a href="/tickets/add-owner-ticket/<%= event._id %>?seatNumber=<%= seat.seatNumber %>">حجز مالك</a>
+                                        </li>
+                                    <% } %>
     
                                     <!-- Cancel Ticket option -->
                                     <li class="dropdown-submenu">

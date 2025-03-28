@@ -125,26 +125,61 @@ $(document).ready(function () {
             if (events.length > 0) {
                 events.forEach(event => {
                     const formattedTime = formatTime(event.time);
-                    $('#event-list').append(`
-                        <div class="event-card">
-                            <div class="texts-container">
-                                <h3>${event.name}</h3>
-                                <p>الوقت: ${formattedTime}</p>
-                                <p>الملاحظات: ${event.notice}</p>
+                    if(userType === "owner") {
+                        $('#event-list').append(`
+                            <div class="event-card">
+                                <div class="texts-container">
+                                    <h3>${event.name}</h3>
+                                    <p>الوقت: ${formattedTime}</p>
+                                    <p>الملاحظات: ${event.notice}</p>
+                                </div>
+                                <div class="buttons-container">
+                                    <form class="button-form" action="/events/show-event/${event._id}" method="get">
+                                        <button class="btn" type="submit">المزيد</button>
+                                    </form>
+                                    <form class="button-form" action="/events/edit-event/${event._id}" method="get">
+                                        <button class="btn" type="submit">تعديل</button>
+                                    </form>
+                                    <form class="button-form" action="/events/delete-event/${event._id}" method="POST">
+                                        <button class="btn" type="submit">مسح</button>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="buttons-container">
-                                <form class="button-form" action="/events/show-event/${event._id}" method="get">
-                                    <button class="btn" type="submit">المزيد</button>
-                                </form>
-                                <form class="button-form" action="/events/edit-event/${event._id}" method="get">
-                                    <button class="btn" type="submit">تعديل</button>
-                                </form>
-                                <form class="button-form" action="/events/delete-event/${event._id}" method="POST">
-                                    <button class="btn" type="submit">مسح</button>
-                                </form>
+                        `);
+                    } else if (userType === "admin") { 
+                        $('#event-list').append(`
+                            <div class="event-card">
+                                <div class="texts-container">
+                                    <h3>${event.name}</h3>
+                                    <p>الوقت: ${formattedTime}</p>
+                                    <p>الملاحظات: ${event.notice}</p>
+                                </div>
+                                <div class="buttons-container">
+                                    <form class="button-form" action="/events/show-event/${event._id}" method="get">
+                                        <button class="btn" type="submit">المزيد</button>
+                                    </form>
+                                    <form class="button-form" action="/events/edit-event/${event._id}" method="get">
+                                        <button class="btn" type="submit">تعديل</button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    `);
+                        `);
+                    } else if (userType === "user") { 
+                        $('#event-list').append(`
+                            <div class="event-card">
+                                <div class="texts-container">
+                                    <h3>${event.name}</h3>
+                                    <p>الوقت: ${formattedTime}</p>
+                                    <p>الملاحظات: ${event.notice}</p>
+                                </div>
+                                <div class="buttons-container">
+                                    <form class="button-form" action="/events/show-event/${event._id}" method="get">
+                                        <button class="btn" type="submit">المزيد</button>
+                                    </form>
+                                </div>
+                            </div>
+                        `);
+                    }
                 });
             } else {
                 $('#event-list').append(`<p class="event-card">لا يوجد مواعيد ${type} في هذا التاريخ</p>`);
